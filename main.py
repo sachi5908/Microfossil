@@ -2,87 +2,137 @@ import streamlit as st
 import tensorflow as tf
 import numpy as np
 from PIL import Image
-import gdown
+import requests
 import os
+import time
 
-# Set TensorFlow logging to avoid unnecessary warnings
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+# Configuration
+MODEL_URL = "https://www.dropbox.com/scl/fi/73zt7x93er1ksywt2f2ah/trained_model.keras?rlkey=dwh6dt0rw6ly1bn6l6r3gqtze&dl=1"
+MODEL_PATH = "trained_model.keras"
 
-# Cache the model loading
+# Suppress TensorFlow warnings
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
 @st.cache_resource
 def load_model():
+    """Download and load the model"""
     try:
-        # Check if model file exists
-        if not os.path.exists("trained_model.keras"):
-            with st.spinner("Downloading model from Google Drive... This may take a few minutes"):
-                # Google Drive direct download link
-                url = "https://drive.google.com/uc?id=1dkqcu5OpiKKoY6i7-i___3-za_18Abh6"
-                output = "trained_model.keras"
-                gdown.download(url, output, quiet=False)
+        # Skip download if model already exists
+        if os.path.exists(MODEL_PATH):
+            return tf.keras.models.load_model(MODEL_PATH)
         
-        return tf.keras.models.load_model("trained_model.keras")
+        # Download the model with progress indicator
+        st.warning("Downloading model (70MB)... Please wait...")
+        progress_bar = st.progress(0)
+        
+        response = requests.get(MODEL_URL, stream=True)
+        response.raise_for_status()
+        
+        total_size = int(response.headers.get('content-length', 0))
+        downloaded = 0
+        start_time = time.time()
+        
+        with open(MODEL_PATH, 'wb') as f:
+            for chunk in response.iter_content(chunk_size=8192):
+                f.write(chunk)
+                downloaded += len(chunk)
+                
+                # Update progress every 0.5 seconds
+                if time.time() - start_time > 0.5:
+                    progress = min(downloaded / total_size, 1.0)
+                    progress_bar.progress(progress)
+                    start_time = time.time()
+        
+        progress_bar.progress(1.0)
+        time.sleep(0.5)
+        progress_bar.empty()
+        
+        return tf.keras.models.load_model(MODEL_PATH)
+    
     except Exception as e:
-        st.error(f"Error loading model: {e}")
+        st.error(f"❌ Model loading failed: {str(e)}")
+        if os.path.exists(MODEL_PATH):
+            os.remove(MODEL_PATH)
         return None
 
-def model_prediction(test_image):
+def predict_disease(test_image):
+    """Make prediction on uploaded image"""
+    model = load_model()
+    if model is None:
+        return -1
+    
     try:
-        model = load_model()
-        if model is None:
-            return -1
-            
-        # Convert the uploaded file to an image
-        image = Image.open(test_image)
-        image = image.resize((128, 128))
+        img = Image.open(test_image).convert('RGB').resize((128, 128))
+        img_array = tf.keras.preprocessing.image.img_to_array(img)
+        img_array = np.expand_dims(img_array, axis=0)
         
-        # Convert image to array and preprocess
-        input_arr = tf.keras.preprocessing.image.img_to_array(image)
-        input_arr = np.array([input_arr])  # convert single image to batch
+        with st.spinner("Analyzing image..."):
+            predictions = model.predict(img_array)
         
-        predictions = model.predict(input_arr)
-        return np.argmax(predictions)  # return index of max element
+        return np.argmax(predictions)
+    
     except Exception as e:
-        st.error(f"Error during prediction: {e}")
+        st.error(f"Prediction error: {str(e)}")
         return -1
 
-# Sidebar
-st.sidebar.title("Dashboard")
-app_mode = st.sidebar.selectbox("Select Page", ["Home", "About", "Disease Recognition"])
+# Streamlit UI
+st.set_page_config(page_title="Plant Disease Detection", layout="wide")
 
-# Main Page
+st.sidebar.title("Navigation")
+app_mode = st.sidebar.radio("Select Page", 
+                          ["Home", "About", "Disease Detection"])
+
 if app_mode == "Home":
-    st.header("PLANT DISEASE RECOGNITION SYSTEM")
+    st.title("🌱 Plant Disease Recognition System")
     st.image("home_page.jpeg", use_column_width=True)
     st.markdown("""
-    Welcome to the Plant Disease Recognition System! 🌿🔍
-    Upload a plant leaf image to detect diseases.
+    Upload an image of a plant leaf to identify potential diseases.
     """)
 
-# About Project
 elif app_mode == "About":
-    st.header("About")
+    st.title("About This Project")
     st.markdown("""
-    #### About Dataset
-    This dataset is recreated using offline augmentation from the original dataset.
-    It consists of about 87K rgb images of healthy and diseased crop leaves categorized into 38 classes.
+    ### Dataset Information
+    This system uses a deep learning model trained on:
+    - 87,000+ images of plant leaves
+    - 38 different disease categories
     """)
 
-# Prediction Page
-elif app_mode == "Disease Recognition":
-    st.header("Disease Recognition")
-    test_image = st.file_uploader("Choose an Image:", type=["jpg", "jpeg", "png"])
+elif app_mode == "Disease Detection":
+    st.title("🔍 Disease Detection")
+    uploaded_file = st.file_uploader("Choose a leaf image", 
+                                   type=["jpg", "jpeg", "png"])
     
-    if test_image is not None:
-        if st.button("Show Image"):
-            st.image(test_image, use_column_width=True)
+    if uploaded_file is not None:
+        col1, col2 = st.columns(2)
         
-        # Predict button
-        if st.button("Predict"):
-            with st.spinner("Analyzing the image..."):
-                result_index = model_prediction(test_image)
+        with col1:
+            st.image(uploaded_file, caption="Uploaded Image", 
+                   use_column_width=True)
+        
+        if st.button("Analyze Image"):
+            result = predict_disease(uploaded_file)
+            
+            if result != -1:
+                class_names = [
+                    'Ammobaculites', 'Dorothia', 'Eggerella', 'Gaudryna',
+                    'Lituola', 'Quinqueloculina', 'Spiroloculina',
+                    'Triloculina', 'Tritexia', 'Trochamminoides', 'Vernuilina'
+                ]
                 
-                if result_index != -1:
-                    class_name = ['Ammobaculites', 'Dorothia', 'Eggerella', 'Gaudryna', 
-                                'Lituola', 'Quinqueloculina', 'Spiroloculina', 
-                                'Triloculina', 'Tritexia', 'Trochamminoides', 'Vernuilina']
-                    st.success(f"Model prediction: {class_name[result_index]}")
+                with col2:
+                    st.success("Analysis Complete")
+                    st.markdown(f"""
+                    ### Prediction Result
+                    **Detected:** {class_names[result]}
+                    """)
+
+# requirements.txt
+"""
+tensorflow==2.10.0
+scikit-learn==1.3.0
+numpy==1.24.3
+streamlit>=1.22.0
+requests==2.31.0
+Pillow==10.0.0
+"""
