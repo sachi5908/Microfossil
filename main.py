@@ -127,12 +127,3 @@ elif app_mode == "Disease Detection":
                     **Detected:** {class_names[result]}
                     """)
 
-# requirements.txt
-"""
-tensorflow==2.10.0
-scikit-learn==1.3.0
-numpy==1.24.3
-streamlit>=1.22.0
-requests==2.31.0
-Pillow==10.0.0
-"""
