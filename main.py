@@ -17,11 +17,10 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 def load_model():
     """Download and load the model"""
     try:
-        # Skip download if model already exists
         if os.path.exists(MODEL_PATH):
             return tf.keras.models.load_model(MODEL_PATH)
         
-        # Only show download message if we're actually downloading
+        # Show download progress only if needed
         download_message = st.empty()
         download_message.warning("Downloading model (70MB)... Please wait...")
         progress_bar = st.progress(0)
@@ -38,7 +37,6 @@ def load_model():
                 f.write(chunk)
                 downloaded += len(chunk)
                 
-                # Update progress every 0.5 seconds
                 if time.time() - start_time > 0.5:
                     progress = min(downloaded / total_size, 1.0)
                     progress_bar.progress(progress)
@@ -59,7 +57,7 @@ def load_model():
 
 def predict_disease(test_image):
     """Make prediction on uploaded image"""
-    model = load_model()  # This will handle the download if needed
+    model = load_model()
     if model is None:
         return -1
     
@@ -77,58 +75,35 @@ def predict_disease(test_image):
         st.error(f"Prediction error: {str(e)}")
         return -1
 
-# Streamlit UI
+# Streamlit UI Configuration
 st.set_page_config(page_title="Plant Disease Detection", layout="wide")
 
-st.sidebar.title("Navigation")
-app_mode = st.sidebar.radio("Select Page", 
-                          ["Home", "About", "Disease Detection"])
+# Main App - Only Disease Detection
+st.title("🌿 Plant Disease Detection")
 
-if app_mode == "Home":
-    st.title("🌱 Plant Disease Recognition System")
-    st.image("home_page.jpeg", use_column_width=True)
-    st.markdown("""
-    Upload an image of a plant leaf to identify potential diseases.
-    """)
+uploaded_file = st.file_uploader("Choose a leaf image", 
+                               type=["jpg", "jpeg", "png"])
 
-elif app_mode == "About":
-    st.title("About This Project")
-    st.markdown("""
-    ### Dataset Information
-    This system uses a deep learning model trained on:
-    - 87,000+ images of plant leaves
-    - 38 different disease categories
-    """)
-
-elif app_mode == "Disease Detection":
-    st.title("🔍 Disease Detection")
+if uploaded_file is not None:
+    col1, col2 = st.columns(2)
     
-    # The load_model() function will handle the download automatically if needed
-    # We don't need to check here because the cached function will handle it
+    with col1:
+        st.image(uploaded_file, caption="Uploaded Image", 
+               use_column_width=True)
     
-    uploaded_file = st.file_uploader("Choose a leaf image", 
-                                   type=["jpg", "jpeg", "png"])
-    
-    if uploaded_file is not None:
-        col1, col2 = st.columns(2)
+    if st.button("Analyze Image"):
+        result = predict_disease(uploaded_file)
         
-        with col1:
-            st.image(uploaded_file, caption="Uploaded Image", 
-                   use_column_width=True)
-        
-        if st.button("Analyze Image"):
-            result = predict_disease(uploaded_file)
+        if result != -1:
+            class_names = [
+                'Ammobaculites', 'Dorothia', 'Eggerella', 'Gaudryna',
+                'Lituola', 'Quinqueloculina', 'Spiroloculina',
+                'Triloculina', 'Tritexia', 'Trochamminoides', 'Vernuilina'
+            ]
             
-            if result != -1:
-                class_names = [
-                    'Ammobaculites', 'Dorothia', 'Eggerella', 'Gaudryna',
-                    'Lituola', 'Quinqueloculina', 'Spiroloculina',
-                    'Triloculina', 'Tritexia', 'Trochamminoides', 'Vernuilina'
-                ]
-                
-                with col2:
-                    st.success("Analysis Complete")
-                    st.markdown(f"""
-                    ### Prediction Result
-                    **Detected:** {class_names[result]}
-                    """)
+            with col2:
+                st.success("Analysis Complete")
+                st.markdown(f"""
+                ### Prediction Result
+                **Detected:** {class_names[result]}
+                """)
