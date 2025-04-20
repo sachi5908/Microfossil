@@ -81,7 +81,7 @@ st.set_page_config(page_title="Plant Disease Detection", layout="wide")
 # Main App - Only Disease Detection
 st.title("🔬 Microfossils Recognizer")
 
-uploaded_file = st.file_uploader("Choose a leaf image", 
+uploaded_file = st.file_uploader("Choose a Microfossil", 
                                type=["jpg", "jpeg", "png"])
 
 if uploaded_file is not None:
