@@ -76,7 +76,7 @@ def predict_disease(test_image):
         return -1
 
 # Streamlit UI Configuration
-st.set_page_config(page_title="Plant Disease Detection", layout="wide")
+st.set_page_config(page_title="Microfossil Genus Detection", layout="wide")
 
 # Main App - Only Disease Detection
 st.title("🔬 Microfossils Recognizer")
