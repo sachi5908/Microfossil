@@ -79,7 +79,7 @@ def predict_disease(test_image):
 st.set_page_config(page_title="Plant Disease Detection", layout="wide")
 
 # Main App - Only Disease Detection
-st.title("🌿 Plant Disease Detection")
+st.title("🔬 Microfossils Recognizer")
 
 uploaded_file = st.file_uploader("Choose a leaf image", 
                                type=["jpg", "jpeg", "png"])
