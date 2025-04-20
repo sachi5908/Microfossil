@@ -21,8 +21,9 @@ def load_model():
         if os.path.exists(MODEL_PATH):
             return tf.keras.models.load_model(MODEL_PATH)
         
-        # Download the model with progress indicator
-        st.warning("Downloading model (70MB)... Please wait...")
+        # Only show download message if we're actually downloading
+        download_message = st.empty()
+        download_message.warning("Downloading model (70MB)... Please wait...")
         progress_bar = st.progress(0)
         
         response = requests.get(MODEL_URL, stream=True)
@@ -46,6 +47,7 @@ def load_model():
         progress_bar.progress(1.0)
         time.sleep(0.5)
         progress_bar.empty()
+        download_message.empty()
         
         return tf.keras.models.load_model(MODEL_PATH)
     
@@ -57,16 +59,9 @@ def load_model():
 
 def predict_disease(test_image):
     """Make prediction on uploaded image"""
-    # First check if model exists or needs to be downloaded
-    if not os.path.exists(MODEL_PATH):
-        st.warning("Model not found. Downloading it now...")
-        model = load_model()
-        if model is None:
-            return -1
-    else:
-        model = load_model()
-        if model is None:
-            return -1
+    model = load_model()  # This will handle the download if needed
+    if model is None:
+        return -1
     
     try:
         img = Image.open(test_image).convert('RGB').resize((128, 128))
@@ -108,13 +103,8 @@ elif app_mode == "About":
 elif app_mode == "Disease Detection":
     st.title("🔍 Disease Detection")
     
-    # Check if model exists before showing uploader
-    if not os.path.exists(MODEL_PATH):
-        st.warning("Please wait while we download the required model file...")
-        model = load_model()
-        if model is None:
-            st.error("Failed to download model. Please try again later.")
-            st.stop()
+    # The load_model() function will handle the download automatically if needed
+    # We don't need to check here because the cached function will handle it
     
     uploaded_file = st.file_uploader("Choose a leaf image", 
                                    type=["jpg", "jpeg", "png"])
