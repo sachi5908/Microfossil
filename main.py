@@ -57,9 +57,16 @@ def load_model():
 
 def predict_disease(test_image):
     """Make prediction on uploaded image"""
-    model = load_model()
-    if model is None:
-        return -1
+    # First check if model exists or needs to be downloaded
+    if not os.path.exists(MODEL_PATH):
+        st.warning("Model not found. Downloading it now...")
+        model = load_model()
+        if model is None:
+            return -1
+    else:
+        model = load_model()
+        if model is None:
+            return -1
     
     try:
         img = Image.open(test_image).convert('RGB').resize((128, 128))
@@ -100,6 +107,15 @@ elif app_mode == "About":
 
 elif app_mode == "Disease Detection":
     st.title("🔍 Disease Detection")
+    
+    # Check if model exists before showing uploader
+    if not os.path.exists(MODEL_PATH):
+        st.warning("Please wait while we download the required model file...")
+        model = load_model()
+        if model is None:
+            st.error("Failed to download model. Please try again later.")
+            st.stop()
+    
     uploaded_file = st.file_uploader("Choose a leaf image", 
                                    type=["jpg", "jpeg", "png"])
     
