@@ -161,7 +161,7 @@ st.set_page_config(page_title="🦠 Microfossil Genus Classifier", layout="wide"
 st.markdown("""
     <style>
     .main-title {
-        font-size: 3rem;
+        font-size: 2rem;
         font-weight: 800;
         color: #3f51b5;
     }
