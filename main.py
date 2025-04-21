@@ -244,7 +244,6 @@ if uploaded_file:
                         font-weight: 700;
                         margin-top: 2rem;
                         margin-bottom: 1rem;
-                        color: #ffffff;
                         display: flex;
                         align-items: center;
                         gap: 0.6rem;
