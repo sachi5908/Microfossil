@@ -283,7 +283,7 @@ if uploaded_file:
                     st.markdown("<div class='section-title'>🔄 Alternative Possibilities</div>", unsafe_allow_html=True)
                     for alt_genus, alt_conf in top_predictions:
                         alt_percent = int(alt_conf * 100)
-                        st.markdown(f"<span style='color:#ffffff; font-size: 1.1rem; font-weight: 600;'>{alt_genus} - {alt_percent}%</span>", unsafe_allow_html=True)
+                        st.markdown(f"<span style='font-size: 1.1rem; font-weight: 600;'>{alt_genus} - {alt_percent}%</span>", unsafe_allow_html=True)
                         st.markdown(f"""
                             <div class="progress-container">
                                 <div class="progress-fill" style="width: {alt_percent}%;">
