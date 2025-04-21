@@ -102,7 +102,7 @@ def get_gemini_features(image_file):
 def extract_candidate_genera(gemini_text):
     text = gemini_text.lower()
     feature_genus_map = {
-        "5": [],
+        "5": ["Quinqueloculina", "Spiroloculina"],
         "6": [],
         "biserial": [],
         "terminal": [],
