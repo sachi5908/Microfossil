@@ -102,13 +102,13 @@ def get_gemini_features(image_file):
 def extract_candidate_genera(gemini_text):
     text = gemini_text.lower()
     feature_genus_map = {
-        "5": [],
-        "6": [],
-        "biserial": [],
-        "terminal": [],
-        "agglutinated": [],
-        "elongate": [],
-        "teardrop": []
+        "5": ["Quinqueloculina", "Spiroloculina"],
+        "6": ["Quinqueloculina", "Spiroloculina"],
+        "biserial": ["Dorothia", "Eggerella", "Tritexia"],
+        "terminal": ["Quinqueloculina", "Spiroloculina", "Triloculina"],
+        "agglutinated": ["Ammobaculites", "Tritexia", "Trochamminoides"],
+        "elongate": ["Dorothia", "Eggerella", "Tritexia"],
+        "teardrop": ["Eggerella", "Tritexia"]
     }
 
     genus_score = defaultdict(int)
