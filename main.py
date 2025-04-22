@@ -162,15 +162,15 @@ st.set_page_config(page_title="🦠 Microfossil Genus Classifier", layout="wide"
 # Custom CSS for sticky header and hidden elements
 st.markdown("""
     <style>
-        /* Hide Streamlit's default header/icons */
+       /* Hide Streamlit's default header/icons */
         #MainMenu {visibility: hidden;}
         header {visibility: hidden;}
         footer {visibility: hidden;}
         
-        /* Fixed header styling */
+        /* Fixed header styling - moved down by 10px */
         .fixed-header {
             position: fixed;
-            top: 10 px;
+            top: 10px;  /* Changed from 0 to 10px */
             left: 0;
             right: 0;
             z-index: 999;
@@ -180,11 +180,12 @@ st.markdown("""
             width: 100%;
         }
         
-        /* Main content margin to prevent overlap */
+        /* Increased main content margin to account for header position */
         .main-content {
-            margin-top: 100px;
+            margin-top: 120px;  
             padding: 1rem;
         }
+        
         
         /* Title styling */
         .main-title {
