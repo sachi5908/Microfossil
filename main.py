@@ -225,17 +225,35 @@ st.markdown("""
     <div class="main-content">
 """, unsafe_allow_html=True)
 
-# Add your image below header
-st.image("https://i.imgur.com/ZLRZknS.jpeg", 
-         use_column_width=True,
-         caption="Microfossil Example",
-         output_format="auto",  # auto-detect format
-         class_="header-image")
+# Image display with robust error handling
+try:
+    from PIL import Image
+    import requests
+    from io import BytesIO
+    
+    # Fetch image from URL
+    response = requests.get("https://i.imgur.com/ZLRZknS.jpeg")
+    response.raise_for_status()  # Raise error for bad status
+    
+    # Open image and display
+    img = Image.open(BytesIO(response.content))
+    st.image(img, 
+             use_column_width=True,
+             caption="Microfossil Example",
+             output_format="auto",
+             class_="header-image")
+    
+except Exception as e:
+    st.warning(f"Couldn't load image: {str(e)}")
+    # Fallback placeholder
+    st.image("https://via.placeholder.com/800x300?text=Microfossil+Example",
+             use_column_width=True,
+             class_="header-image")
 
-# Note section with custom styling
+# Rest of your content remains the same
 st.markdown(f"""
     <div class="model-note">
-        <strong>Note:</strong> The model has been trained on the following genera: 
+        <strong>Note:</strong> The model has been trained on: 
         {", ".join(f"<b>{genus}</b>" for genus in GENUS_LIST)}
     </div>
 """, unsafe_allow_html=True)
