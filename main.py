@@ -170,11 +170,10 @@ st.markdown("""
         /* Fixed header styling - moved down by 10px */
         .fixed-header {
             position: fixed;
-            top: 10px;  /* Changed from 0 to 10px */
+            top: 20px;  /* Changed from 0 to 10px */
             left: 0;
             right: 0;
             z-index: 999;
-            background: white;
             padding: 1rem;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             width: 100%;
