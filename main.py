@@ -191,38 +191,28 @@ st.markdown("""
             font-weight: 800;
             color: #3f51b5;
             margin: 0;
+            margin-bottom: 10px;
+        }
+        
+        /* Header image styling */
+        .header-image {
+            width: 100%;
+            max-height: 200px;
+            object-fit: contain;
+            margin-bottom: 20px;
+            border-radius: 8px;
         }
         
         /* Note section styling */
         .model-note {
-            margin-top: 20px;
+            margin-top: 10px;
             margin-bottom: 20px;
             padding: 15px;
-            background: #f8f9fa;
             border-radius: 8px;
             border-left: 4px solid #3f51b5;
         }
         
-        /* Uploader styling */
-        .stFileUploader {
-            margin-top: 20px;
-            border: 2px dashed #3f51b5;
-            border-radius: 8px;
-            padding: 20px;
-        }
-        
         /* Rest of your existing styles... */
-        .genus-container {
-            background-color: #e3f2fd;
-            padding: 1.5rem;
-            border-radius: 12px;
-            margin-bottom: 1rem;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            font-size: 2.4rem;
-            font-weight: 700;
-            text-align: center;
-            color: #0d47a1;
-        }
     </style>
 """, unsafe_allow_html=True)
 
@@ -233,6 +223,10 @@ st.markdown("""
     </div>
     <div class="main-content">
 """, unsafe_allow_html=True)
+
+# Add your image below header
+st.image("pic.jpg", use_column_width=True, caption="", output_format="JPEG", 
+         clamp=False, channels="RGB", class_="header-image")
 
 # Note section with custom styling
 st.markdown(f"""
@@ -250,6 +244,11 @@ with upload_container:
         type=["jpg", "jpeg", "png"],
         help="Drag and drop file here\nLimit 200MB per file • JPG, JPEG, PNG"
     )
+
+# Close the content wrapper
+st.markdown("</div>", unsafe_allow_html=True)
+
+# ... [rest of your existing code] ...
 
 if uploaded_file:
     col1, col2 = st.columns([1, 2])
