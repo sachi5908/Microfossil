@@ -183,7 +183,7 @@ st.markdown("""
         
         /* Main content margin to prevent overlap */
         .main-content {
-            margin-top: 100px;
+            margin-top: 10px;
             padding: 1rem;
         }
         
