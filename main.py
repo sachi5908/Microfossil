@@ -224,9 +224,7 @@ st.markdown("""
     <div class="main-content">
 """, unsafe_allow_html=True)
 
-# Add your image below header
-st.image("pic.jpg", use_column_width=True, caption="", output_format="JPG", 
-         clamp=False, channels="RGB", class_="header-image")
+
 
 # Note section with custom styling
 st.markdown(f"""
