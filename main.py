@@ -162,15 +162,15 @@ st.set_page_config(page_title="🦠 Microfossil Genus Classifier", layout="wide"
 # Custom CSS for sticky header and hidden elements
 st.markdown("""
     <style>
-       /* Hide Streamlit's default header/icons */
+        /* Hide Streamlit's default header/icons */
         #MainMenu {visibility: hidden;}
         header {visibility: hidden;}
         footer {visibility: hidden;}
         
-        /* Fixed header styling - moved down by 10px */
+        /* Fixed header styling */
         .fixed-header {
             position: fixed;
-            top: 30px;  /* Changed from 0 to 10px */
+            top: 30px;
             left: 0;
             right: 0;
             z-index: 999;
@@ -179,12 +179,11 @@ st.markdown("""
             width: 100%;
         }
         
-        /* Increased main content margin to account for header position */
+        /* Main content container */
         .main-content {
-            margin-top: 120px;  
+            margin-top: 80px;
             padding: 1rem;
         }
-        
         
         /* Title styling */
         .main-title {
@@ -194,7 +193,25 @@ st.markdown("""
             margin: 0;
         }
         
-        /* Genus prediction box */
+        /* Note section styling */
+        .model-note {
+            margin-top: 20px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #3f51b5;
+        }
+        
+        /* Uploader styling */
+        .stFileUploader {
+            margin-top: 20px;
+            border: 2px dashed #3f51b5;
+            border-radius: 8px;
+            padding: 20px;
+        }
+        
+        /* Rest of your existing styles... */
         .genus-container {
             background-color: #e3f2fd;
             padding: 1.5rem;
@@ -205,36 +222,6 @@ st.markdown("""
             font-weight: 700;
             text-align: center;
             color: #0d47a1;
-        }
-        
-        /* Progress bar styling */
-        .progress-container {
-            background-color: #e0e0e0;
-            border-radius: 999px;
-            height: 24px;
-            width: 100%;
-            margin-bottom: 12px;
-            overflow: hidden;
-        }
-        
-        .progress-fill {
-            background-color: #1e88e5;
-            height: 100%;
-            color: white;
-            font-weight: 600;
-            text-align: center;
-            line-height: 24px;
-        }
-        
-        /* Section titles */
-        .section-title {
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin-top: 2rem;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.6rem;
         }
     </style>
 """, unsafe_allow_html=True)
@@ -247,14 +234,22 @@ st.markdown("""
     <div class="main-content">
 """, unsafe_allow_html=True)
 
-# Main content
-st.markdown(
-    "<strong>Note:</strong> The model has been trained on the following genera: " +
-    ", ".join(f"<b>{genus}</b>" for genus in GENUS_LIST),
-    unsafe_allow_html=True
-)
+# Note section with custom styling
+st.markdown(f"""
+    <div class="model-note">
+        <strong>Note:</strong> The model has been trained on the following genera: 
+        {", ".join(f"<b>{genus}</b>" for genus in GENUS_LIST)}
+    </div>
+""", unsafe_allow_html=True)
 
-uploaded_file = st.file_uploader("🖼️ Upload Image", type=["jpg", "jpeg", "png"])
+# File uploader with custom container
+upload_container = st.container()
+with upload_container:
+    uploaded_file = st.file_uploader(
+        "🖼️ Upload Image", 
+        type=["jpg", "jpeg", "png"],
+        help="Drag and drop file here\nLimit 200MB per file • JPG, JPEG, PNG"
+    )
 
 if uploaded_file:
     col1, col2 = st.columns([1, 2])
