@@ -191,7 +191,7 @@ st.markdown("""
         .main-title {
             font-size: 2rem;
             font-weight: 800;
-            color: #3f51b5;
+            color: black;
             margin: 0;
         }
         
