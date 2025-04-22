@@ -9,34 +9,6 @@ import random
 from collections import defaultdict
 import google.generativeai as genai
 
-# Streamlit app
-st.markdown("""
-    <style>
-        :root {
-            color-scheme: light dark;
-        }
-        @media (prefers-color-scheme: dark) {
-            body {
-                background-color: #121212;
-                color: #ffffff;
-            }
-            .stApp {
-                background-color: #121212;
-            }
-            .genus-box, .genus-container {
-                background-color: #424242 !important;
-                border-left-color: #bb86fc !important;
-                color: #ffffff !important;
-            }
-            .progress-bar, .progress-container {
-                background-color: #333333 !important;
-            }
-            .progress-fill {
-                background: linear-gradient(90deg, #bb86fc, #3700b3) !important;
-            }
-        }
-    </style>
-""", unsafe_allow_html=True)
 
 # ------------------ Configuration ------------------
 MODEL_URL = st.secrets["MODEL_URL"]
