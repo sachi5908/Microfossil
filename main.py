@@ -160,6 +160,16 @@ def predict_genus(image_file, prioritized_genera=None):
 st.set_page_config(page_title="🦠 Microfossil Genus Classifier", layout="wide")
 st.markdown("""
     <style>
+             /* Hide Streamlit's default header icons */
+        #MainMenu {visibility: hidden;}
+        header {visibility: hidden;}
+        footer {visibility: hidden;}
+        
+        /* Optional: Adjust spacing after hiding header */
+        .stApp {
+            margin-top: -80px;
+        }
+            
     /* Main title styling */
     .main-title {
         font-size: 2rem;
@@ -171,7 +181,7 @@ st.markdown("""
     /* Fixed header at the very top */
     .fixed-header {
         position: fixed;
-        top: 0;
+        top: 10;
         left: 0;
         right: 0;
         z-index: 999;
@@ -215,20 +225,12 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Fixed header at the top
-st.markdown("""
-    <div class="fixed-header">
-        <div class="main-title">🔬 Microfossils Recognizer</div>
-    </div>
-    <div class="content-below-header"></div>
-""", unsafe_allow_html=True)
-
-# Rest of your Streamlit app content
+st.markdown("<div class='main-title'>🔬 Microfossils Recognizer</div>", unsafe_allow_html=True)
 st.markdown(
     "<strong>Note:</strong> The model has been trained on the following genera: " +
     ", ".join(f"<b>{genus}</b>" for genus in GENUS_LIST),
     unsafe_allow_html=True
 )
-
 uploaded_file = st.file_uploader("🖼️ Upload Image", type=["jpg", "jpeg", "png"])
 
 
