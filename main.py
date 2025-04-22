@@ -9,29 +9,58 @@ import random
 from collections import defaultdict
 import google.generativeai as genai
 
-# ============ 1. FIRST THING - Page Config ============
+# MUST BE FIRST - Page config
 st.set_page_config(
-    page_title="🦠 Microfossil Genus Classifier",
+    page_title="🦠 Microfossil Genus Classifier", 
     layout="wide",
     initial_sidebar_state="auto"
 )
 
-# ============ 2. THEN add Dark Mode CSS ============
+# Dark Mode CSS Injection
 st.markdown("""
     <style>
-        :root {
-            color-scheme: light dark;
+        html, body, .stApp {
+            transition: all 0.3s ease;
         }
-        @media (prefers-color-scheme: dark) {
-            /* Your dark mode styles here */
-            body, .stApp {
-                background-color: #121212;
-                color: #ffffff;
-            }
-            /* Add other dark mode styles */
+        
+        .dark-mode {
+            background-color: #121212 !important;
+            color: #ffffff !important;
+        }
+        .dark-mode .genus-box, 
+        .dark-mode .genus-container {
+            background-color: #424242 !important;
+            border-left-color: #bb86fc !important;
+            color: #ffffff !important;
+        }
+        .dark-mode .progress-container {
+            background-color: #333333 !important;
+        }
+        .dark-mode .progress-fill {
+            background: linear-gradient(90deg, #bb86fc, #3700b3) !important;
+        }
+        .dark-mode input, 
+        .dark-mode textarea, 
+        .dark-mode select {
+            background-color: #333 !important;
+            color: #fff !important;
+            border-color: #555 !important;
         }
     </style>
 """, unsafe_allow_html=True)
+
+# JavaScript to handle theme changes
+st.components.v1.html("""
+<script>
+function setDarkMode(isDark) {
+    if (isDark) {
+        document.body.classList.add('dark-mode');
+    } else {
+        document.body.classList.remove('dark-mode');
+    }
+}
+</script>
+""")
 
 # ============ 3. THEN your other configurations ============
 MODEL_URL = st.secrets["MODEL_URL"]
