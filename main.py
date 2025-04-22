@@ -181,7 +181,6 @@ def predict_genus(image_file, prioritized_genera=None):
 
 
 # ------------------ Streamlit UI ------------------
-st.set_page_config(page_title="🦠 Microfossil Genus Classifier", layout="wide")
 st.markdown("""
     <style>
     .main-title {
