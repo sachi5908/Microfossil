@@ -158,82 +158,63 @@ def predict_genus(image_file, prioritized_genera=None):
 
 # ------------------ Streamlit UI ------------------
 st.set_page_config(page_title="🦠 Microfossil Genus Classifier", layout="wide")
+st.set_page_config(page_title="🦠 Microfossil Genus Classifier", layout="wide")
 st.markdown("""
     <style>
-             /* Hide Streamlit's default header icons */
+        /* Hide Streamlit's default header/icons */
         #MainMenu {visibility: hidden;}
         header {visibility: hidden;}
         footer {visibility: hidden;}
         
-        /* Optional: Adjust spacing after hiding header */
-        .stApp {
-            margin-top: -80px;
+        /* Fixed header styling */
+        .fixed-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 999;
+            background: white;
+            padding: 1rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            width: 100%;
         }
-            
-    /* Main title styling */
-    .main-title {
-        font-size: 2rem;
-        font-weight: 800;
-        color: #3f51b5;
-        margin-bottom: 1rem;
-    }
-    
-    /* Fixed header at the very top */
-    .fixed-header {
-        position: fixed;
-        top: 10;
-        left: 0;
-        right: 0;
-        z-index: 999;
-        background: white;
-        padding: 1rem;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        width: 100%;
-    }
-    
-    /* Prevent content from hiding behind the fixed header */
-    .content-below-header {
-        margin-top: 80px;  /* Adjust based on header height */
-    }
-    
-    /* Rest of your existing styles */
-    .genus-box {
-        background-color: #e3f2fd;
-        padding: 1.2rem;
-        border-radius: 12px;
-        border-left: 6px solid #1e88e5;
-        margin-top: 20px;
-        font-size: 1.5rem;
-        color: #0d47a1;
-    }
-    .progress-bar {
-        background-color: #e0e0e0;
-        border-radius: 10px;
-        height: 24px;
-        margin-top: 8px;
-        overflow: hidden;
-    }
-    .progress-fill {
-        background: linear-gradient(90deg, #42a5f5, #1e88e5);
-        height: 100%;
-        text-align: center;
-        color: white;
-        line-height: 24px;
-        font-weight: bold;
-    }
+        
+        /* Main content margin to prevent overlap */
+        .main-content {
+            margin-top: 100px;  /* Adjust based on header height */
+        }
+        
+        /* Title styling */
+        .main-title {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #3f51b5;
+            margin: 0;
+        }
+        
+        /* Rest of your existing styles... */
+        .genus-box { /* ... */ }
+        .progress-bar { /* ... */ }
     </style>
 """, unsafe_allow_html=True)
 
-# Fixed header at the top
-st.markdown("<div class='main-title'>🔬 Microfossils Recognizer</div>", unsafe_allow_html=True)
+# Fixed header container (placed FIRST)
+st.markdown("""
+    <div class="fixed-header">
+        <div class="main-title">🔬 Microfossils Recognizer</div>
+    </div>
+    <div class="main-content">  <!-- Content wrapper starts -->
+""", unsafe_allow_html=True)
+
+# --- Your existing content goes here ---
 st.markdown(
     "<strong>Note:</strong> The model has been trained on the following genera: " +
     ", ".join(f"<b>{genus}</b>" for genus in GENUS_LIST),
     unsafe_allow_html=True
 )
+
 uploaded_file = st.file_uploader("🖼️ Upload Image", type=["jpg", "jpeg", "png"])
-
-
+st.markdown("</div>", unsafe_allow_html=True)
 if uploaded_file:
     col1, col2 = st.columns([1, 2])
 
