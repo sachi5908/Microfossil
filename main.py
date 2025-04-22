@@ -170,7 +170,7 @@ st.markdown("""
         /* Fixed header styling */
         .fixed-header {
             position: fixed;
-            top: 10;
+            top: 2;
             left: 0;
             right: 0;
             z-index: 999;
