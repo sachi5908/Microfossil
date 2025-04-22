@@ -155,11 +155,10 @@ def predict_genus(image_file, prioritized_genera=None):
         st.error(f"Prediction error: {str(e)}")
         return -1, None, 0.0, []
 
-
 # ------------------ Streamlit UI ------------------
 st.set_page_config(page_title="🦠 Microfossil Genus Classifier", layout="wide")
 
-# Custom CSS for sticky header and hidden elements
+# Custom CSS for styling
 st.markdown("""
     <style>
         /* Hide Streamlit's default header/icons */
@@ -182,68 +181,47 @@ st.markdown("""
         
         /* Main content margin to prevent overlap */
         .main-content {
-            margin-top: 100px;
-            padding: 1rem;
+            margin-top: 110px;
+            padding: 1rem 2rem;
         }
         
         /* Title styling */
         .main-title {
-            font-size: 2rem;
-            font-weight: 800;
+            font-size: 2.4rem;
+            font-weight: 900;
             color: #3f51b5;
             margin: 0;
-        }
-        
-        /* Genus prediction box */
-        .genus-container {
-            background-color: #e3f2fd;
-            padding: 1.5rem;
-            border-radius: 12px;
-            margin-bottom: 1rem;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            font-size: 2.4rem;
-            font-weight: 700;
             text-align: center;
-            color: #0d47a1;
         }
         
-        /* Progress bar styling */
-        .progress-container {
-            background-color: #e0e0e0;
-            border-radius: 999px;
-            height: 24px;
-            width: 100%;
-            margin-bottom: 12px;
-            overflow: hidden;
-        }
-        
-        .progress-fill {
-            background-color: #1e88e5;
-            height: 100%;
-            color: white;
-            font-weight: 600;
-            text-align: center;
-            line-height: 24px;
-        }
-        
-        /* Section titles */
-        .section-title {
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin-top: 2rem;
-            margin-bottom: 1rem;
+        /* Center image with some style */
+        .centered-img {
             display: flex;
-            align-items: center;
-            gap: 0.6rem;
+            justify-content: center;
+            margin: 2rem 0 1.5rem 0;
+        }
+
+        .centered-img img {
+            border-radius: 16px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+            transition: transform 0.3s ease;
+            max-width: 90%;
+            height: auto;
+        }
+
+        .centered-img img:hover {
+            transform: scale(1.02);
         }
 
         /* Note section styling */
         .model-note {
             margin-top: 10px;
-            margin-bottom: 20px;
-            padding: 15px;
-            border-radius: 8px;
-            border-left: 4px solid #3f51b5;
+            margin-bottom: 30px;
+            padding: 18px;
+            background-color: #f1f5fb;
+            border-left: 6px solid #3f51b5;
+            border-radius: 10px;
+            font-size: 1.1rem;
         }
     </style>
 """, unsafe_allow_html=True)
@@ -256,8 +234,13 @@ st.markdown("""
     <div class="main-content">
 """, unsafe_allow_html=True)
 
-# Image between title and note
-st.image("pic.jpg", use_column_width=True)
+# Insert the uploaded image between title and note
+st.markdown('<div class="centered-img">', unsafe_allow_html=True)
+st.image("/mnt/data/pic.jpg")
+st.markdown('</div>', unsafe_allow_html=True)
+
+# Your predefined genus list
+GENUS_LIST = ["Nummulites", "Globigerina", "Trilobites", "Radiolaria", "Foraminifera"]  # example
 
 # Note content
 st.markdown(f"""
@@ -268,7 +251,7 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # File uploader
-uploaded_file = st.file_uploader("🖼️ Upload Image", type=["jpg", "jpeg", "png"])
+uploaded_file = st.file_uploader("🖼️ Upload Microfossil Image", type=["jpg", "jpeg", "png"])
 
 if uploaded_file:
     col1, col2 = st.columns([1, 2])
