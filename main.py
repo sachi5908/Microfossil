@@ -160,19 +160,33 @@ def predict_genus(image_file, prioritized_genera=None):
 st.set_page_config(page_title="🦠 Microfossil Genus Classifier", layout="wide")
 st.markdown("""
     <style>
+    /* Main title styling */
     .main-title {
         font-size: 2rem;
         font-weight: 800;
         color: #3f51b5;
+        margin-bottom: 1rem;
     }
-    .sticky-header {
-        position: sticky;
+    
+    /* Fixed header at the very top */
+    .fixed-header {
+        position: fixed;
         top: 0;
-        z-index: 1000;
-        background-color: white;
-        padding: 1rem 0;
+        left: 0;
+        right: 0;
+        z-index: 999;
+        background: white;
+        padding: 1rem;
         box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        width: 100%;
     }
+    
+    /* Prevent content from hiding behind the fixed header */
+    .content-below-header {
+        margin-top: 80px;  /* Adjust based on header height */
+    }
+    
+    /* Rest of your existing styles */
     .genus-box {
         background-color: #e3f2fd;
         padding: 1.2rem;
@@ -200,7 +214,15 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-st.markdown("<div class='sticky-header'><div class='main-title'>🔬 Microfossils Recognizer</div></div>", unsafe_allow_html=True)
+# Fixed header at the top
+st.markdown("""
+    <div class="fixed-header">
+        <div class="main-title">🔬 Microfossils Recognizer</div>
+    </div>
+    <div class="content-below-header"></div>
+""", unsafe_allow_html=True)
+
+# Rest of your Streamlit app content
 st.markdown(
     "<strong>Note:</strong> The model has been trained on the following genera: " +
     ", ".join(f"<b>{genus}</b>" for genus in GENUS_LIST),
@@ -208,6 +230,7 @@ st.markdown(
 )
 
 uploaded_file = st.file_uploader("🖼️ Upload Image", type=["jpg", "jpeg", "png"])
+
 
 if uploaded_file:
     col1, col2 = st.columns([1, 2])
