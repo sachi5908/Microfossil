@@ -260,11 +260,17 @@ with open("pic.jpg", "rb") as file:
     img_data = file.read()
     img_base64 = base64.b64encode(img_data).decode()
 
+with open("pic.jpg", "rb") as file:
+    img_data = file.read()
+    img_base64 = base64.b64encode(img_data).decode()
+
 st.markdown(f"""
-    <div style="width: 100%; margin-top: 1rem; margin-bottom: 1rem;">
+    <div style="width: 100%; margin-top: 0rem; margin-bottom: 1.5rem;">
         <img src="data:image/jpeg;base64,{img_base64}" 
-             alt="Microfossils Banner" 
-             style="width: 100%; max-height: 280px; object-fit: cover; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+             alt="Microfossil Banner"
+             style="width: 100%; max-height: 250px; object-fit: cover;
+                    border-radius: 10px;
+                    box-shadow: 0 6px 18px rgba(0,0,0,0.15);">
     </div>
 """, unsafe_allow_html=True)
 
