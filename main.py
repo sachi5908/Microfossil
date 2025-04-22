@@ -175,7 +175,7 @@ st.markdown("""
             left: 0;
             right: 0;
             z-index: 999;
-            background: #defeff;
+            background: white;
             padding: 1rem;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             width: 100%;
