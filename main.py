@@ -9,62 +9,31 @@ import random
 from collections import defaultdict
 import google.generativeai as genai
 
-# ============ ADD DARK MODE CSS HERE ============
+# ============ 1. FIRST THING - Page Config ============
+st.set_page_config(
+    page_title="🦠 Microfossil Genus Classifier",
+    layout="wide",
+    initial_sidebar_state="auto"
+)
+
+# ============ 2. THEN add Dark Mode CSS ============
 st.markdown("""
     <style>
         :root {
             color-scheme: light dark;
         }
         @media (prefers-color-scheme: dark) {
-            /* Main background */
+            /* Your dark mode styles here */
             body, .stApp {
                 background-color: #121212;
                 color: #ffffff;
             }
-            
-            /* Text colors */
-            h1, h2, h3, h4, h5, h6, p, div, span {
-                color: #e0e0e0 !important;
-            }
-            
-            /* Your custom components */
-            .genus-box, .genus-container {
-                background-color: #424242 !important;
-                border-left-color: #bb86fc !important;
-                color: #ffffff !important;
-            }
-            
-            /* Progress bars */
-            .progress-bar, .progress-container {
-                background-color: #333333 !important;
-            }
-            .progress-fill {
-                background: linear-gradient(90deg, #bb86fc, #3700b3) !important;
-            }
-            
-            /* Form elements */
-            .stTextInput input, .stTextArea textarea, .stSelectbox select {
-                background-color: #333 !important;
-                color: #fff !important;
-                border-color: #555 !important;
-            }
-            
-            /* Buttons */
-            .stButton button {
-                background-color: #3700b3 !important;
-                color: white !important;
-                border-color: #bb86fc !important;
-            }
-            
-            /* File uploader */
-            .stFileUploader label {
-                color: #bb86fc !important;
-            }
+            /* Add other dark mode styles */
         }
     </style>
 """, unsafe_allow_html=True)
 
-# ------------------ Configuration ------------------
+# ============ 3. THEN your other configurations ============
 MODEL_URL = st.secrets["MODEL_URL"]
 MODEL_PATH = st.secrets["MODEL_PATH"]
 API_KEYS = st.secrets["KEYS"].split(",")
