@@ -235,6 +235,15 @@ st.markdown("""
             align-items: center;
             gap: 0.6rem;
         }
+             /* Note section styling */
+        .model-note {
+            margin-top: 10px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #3f51b5;
+        }
     </style>
 """, unsafe_allow_html=True)
 
@@ -246,12 +255,13 @@ st.markdown("""
     <div class="main-content">
 """, unsafe_allow_html=True)
 
-# Main content
-st.markdown(
-    "<strong>Note:</strong> The model has been trained on the following genera: " +
-    ", ".join(f"<b>{genus}</b>" for genus in GENUS_LIST),
-    unsafe_allow_html=True
-)
+# Note content
+st.markdown(f"""
+    <div class="model-note">
+        <strong>Note:</strong> The model has been trained on the following genera: 
+        {", ".join(f"<b>{genus}</b>" for genus in GENUS_LIST)}
+    </div>
+""", unsafe_allow_html=True)
 
 uploaded_file = st.file_uploader("🖼️ Upload Image", type=["jpg", "jpeg", "png"])
 
