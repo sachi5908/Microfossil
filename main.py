@@ -240,7 +240,6 @@ st.markdown("""
             margin-top: 10px;
             margin-bottom: 20px;
             padding: 15px;
-            background: #f8f9fa;
             border-radius: 8px;
             border-left: 4px solid #3f51b5;
         }
