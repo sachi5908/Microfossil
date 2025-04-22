@@ -193,7 +193,8 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 st.markdown("<div class='main-title'>🔬 Microfossils Recognizer</div>", unsafe_allow_html=True)
-st.markdown("<strong>Note:</strong> The model has been trained on the following genera: <b>Ammobaculites</b>, <b>Dorothia</b>, <b>Eggerella</b>, <b>Gaudryna</b>, <b>Lituola</b>, <b>Quinqueloculina</b>, <b>Spiroloculina</b>, <b>Triloculina</b>, <b>Tritexia</b>, <b>Trochamminoides</b>, and <b>Vernuilina</b>.</div>",unsafe_allow_html=True)
+st.markdown("<strong>Note:</strong> The model has been trained on the following genera: 
+{', '.join(f"<b>{genus}</b>" for genus in GENUS_LIST)}")
 
 uploaded_file = st.file_uploader("🖼️ Upload Image", type=["jpg", "jpeg", "png"])
 
