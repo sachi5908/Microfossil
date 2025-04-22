@@ -197,10 +197,11 @@ st.markdown("""
         /* Header image styling */
         .header-image {
             width: 100%;
-            max-height: 200px;
+            max-height: 300px;
             object-fit: contain;
-            margin-bottom: 20px;
+            margin: 15px 0;
             border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
         
         /* Note section styling */
@@ -224,7 +225,12 @@ st.markdown("""
     <div class="main-content">
 """, unsafe_allow_html=True)
 
-
+# Add your image below header
+st.image("https://i.imgur.com/ZLRZknS.jpeg", 
+         use_column_width=True,
+         caption="Microfossil Example",
+         output_format="auto",  # auto-detect format
+         class_="header-image")
 
 # Note section with custom styling
 st.markdown(f"""
@@ -242,6 +248,7 @@ with upload_container:
         type=["jpg", "jpeg", "png"],
         help="Drag and drop file here\nLimit 200MB per file • JPG, JPEG, PNG"
     )
+
 
 if uploaded_file:
     col1, col2 = st.columns([1, 2])
