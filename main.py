@@ -245,11 +245,6 @@ with upload_container:
         help="Drag and drop file here\nLimit 200MB per file • JPG, JPEG, PNG"
     )
 
-# Close the content wrapper
-st.markdown("</div>", unsafe_allow_html=True)
-
-# ... [rest of your existing code] ...
-
 if uploaded_file:
     col1, col2 = st.columns([1, 2])
 
