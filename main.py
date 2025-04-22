@@ -19,10 +19,8 @@ st.set_page_config(
 # ============ 2. THEN add Dark Mode CSS ============
 st.markdown("""
     <style>
-        :root, body, .stApp {
-            color-scheme: dark;
-            background-color: #121212;
-            color: #ffffff;
+        :root {
+            color-scheme: light dark;
         }
         @media (prefers-color-scheme: dark) {
             /* Your dark mode styles here */
