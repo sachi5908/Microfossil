@@ -177,6 +177,7 @@ st.markdown("""
             padding: 1rem;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             width: 100%;
+            background-color: white;
         }
         
         /* Main content margin to prevent overlap */
@@ -235,7 +236,8 @@ st.markdown("""
             align-items: center;
             gap: 0.6rem;
         }
-             /* Note section styling */
+
+        /* Note section styling */
         .model-note {
             margin-top: 10px;
             margin-bottom: 20px;
@@ -254,6 +256,9 @@ st.markdown("""
     <div class="main-content">
 """, unsafe_allow_html=True)
 
+# Image between title and note
+st.image("pic.jpg", use_column_width=True)
+
 # Note content
 st.markdown(f"""
     <div class="model-note">
@@ -262,6 +267,7 @@ st.markdown(f"""
     </div>
 """, unsafe_allow_html=True)
 
+# File uploader
 uploaded_file = st.file_uploader("🖼️ Upload Image", type=["jpg", "jpeg", "png"])
 
 if uploaded_file:
