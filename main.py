@@ -158,7 +158,8 @@ def predict_genus(image_file, prioritized_genera=None):
 
 # ------------------ Streamlit UI ------------------
 st.set_page_config(page_title="🦠 Microfossil Genus Classifier", layout="wide")
-st.set_page_config(page_title="🦠 Microfossil Genus Classifier", layout="wide")
+
+# Custom CSS for sticky header and hidden elements
 st.markdown("""
     <style>
         /* Hide Streamlit's default header/icons */
@@ -181,7 +182,8 @@ st.markdown("""
         
         /* Main content margin to prevent overlap */
         .main-content {
-            margin-top: 100px;  /* Adjust based on header height */
+            margin-top: 100px;
+            padding: 1rem;
         }
         
         /* Title styling */
@@ -192,21 +194,60 @@ st.markdown("""
             margin: 0;
         }
         
-        /* Rest of your existing styles... */
-        .genus-box { /* ... */ }
-        .progress-bar { /* ... */ }
+        /* Genus prediction box */
+        .genus-container {
+            background-color: #e3f2fd;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            font-size: 2.4rem;
+            font-weight: 700;
+            text-align: center;
+            color: #0d47a1;
+        }
+        
+        /* Progress bar styling */
+        .progress-container {
+            background-color: #e0e0e0;
+            border-radius: 999px;
+            height: 24px;
+            width: 100%;
+            margin-bottom: 12px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            background-color: #1e88e5;
+            height: 100%;
+            color: white;
+            font-weight: 600;
+            text-align: center;
+            line-height: 24px;
+        }
+        
+        /* Section titles */
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
     </style>
 """, unsafe_allow_html=True)
 
-# Fixed header container (placed FIRST)
+# Fixed header container
 st.markdown("""
     <div class="fixed-header">
         <div class="main-title">🔬 Microfossils Recognizer</div>
     </div>
-    <div class="main-content">  <!-- Content wrapper starts -->
+    <div class="main-content">
 """, unsafe_allow_html=True)
 
-# --- Your existing content goes here ---
+# Main content
 st.markdown(
     "<strong>Note:</strong> The model has been trained on the following genera: " +
     ", ".join(f"<b>{genus}</b>" for genus in GENUS_LIST),
@@ -214,7 +255,7 @@ st.markdown(
 )
 
 uploaded_file = st.file_uploader("🖼️ Upload Image", type=["jpg", "jpeg", "png"])
-st.markdown("</div>", unsafe_allow_html=True)
+
 if uploaded_file:
     col1, col2 = st.columns([1, 2])
 
@@ -244,47 +285,6 @@ if uploaded_file:
             if result_index != -1:
                 confidence_percent = int(confidence * 100)
 
-                st.markdown("""
-                    <style>
-                    .genus-container {
-                        background-color: #e3f2fd;
-                        padding: 1.5rem;
-                        border-radius: 12px;
-                        margin-bottom: 1rem;
-                        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-                        font-size: 2.4rem;
-                        font-weight: 700;
-                        text-align: center;
-                        color: #0d47a1;
-                    }
-                    .section-title {
-                        font-size: 1.8rem;
-                        font-weight: 700;
-                        margin-top: 2rem;
-                        margin-bottom: 1rem;
-                        display: flex;
-                        align-items: center;
-                        gap: 0.6rem;
-                    }
-                    .progress-container {
-                        background-color: #e0e0e0;
-                        border-radius: 999px;
-                        height: 24px;
-                        width: 100%;
-                        margin-bottom: 12px;
-                        overflow: hidden;
-                    }
-                    .progress-fill {
-                        background-color: #1e88e5;
-                        height: 100%;
-                        color: white;
-                        font-weight: 600;
-                        text-align: center;
-                        line-height: 24px;
-                    }
-                    </style>
-                """, unsafe_allow_html=True)
-
                 st.markdown("<div class='section-title'>🧬 Predicted Genus</div>", unsafe_allow_html=True)
                 st.markdown(f"<div class='genus-container'>{predicted_genus}</div>", unsafe_allow_html=True)
 
@@ -309,3 +309,6 @@ if uploaded_file:
                                 </div>
                             </div>
                         """, unsafe_allow_html=True)
+
+# Close the content wrapper
+st.markdown("</div>", unsafe_allow_html=True)
