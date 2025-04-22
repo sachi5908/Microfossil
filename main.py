@@ -16,51 +16,93 @@ st.set_page_config(
     initial_sidebar_state="auto"
 )
 
-# Dark Mode CSS Injection
-st.markdown("""
-    <style>
-        html, body, .stApp {
-            transition: all 0.3s ease;
-        }
-        
-        .dark-mode {
-            background-color: #121212 !important;
-            color: #ffffff !important;
-        }
-        .dark-mode .genus-box, 
-        .dark-mode .genus-container {
-            background-color: #424242 !important;
-            border-left-color: #bb86fc !important;
-            color: #ffffff !important;
-        }
-        .dark-mode .progress-container {
-            background-color: #333333 !important;
-        }
-        .dark-mode .progress-fill {
-            background: linear-gradient(90deg, #bb86fc, #3700b3) !important;
-        }
-        .dark-mode input, 
-        .dark-mode textarea, 
-        .dark-mode select {
-            background-color: #333 !important;
-            color: #fff !important;
-            border-color: #555 !important;
-        }
-    </style>
-""", unsafe_allow_html=True)
-
-# JavaScript to handle theme changes
+# JavaScript for theme and overlay control
 st.components.v1.html("""
 <script>
-function setDarkMode(isDark) {
-    if (isDark) {
-        document.body.classList.add('dark-mode');
-    } else {
-        document.body.classList.remove('dark-mode');
-    }
+// Global theme state
+let isDarkMode = false;
+
+// Apply theme to all elements
+function applyTheme(darkMode) {
+    isDarkMode = darkMode;
+    document.body.classList.toggle('dark-mode', darkMode);
+    
+    // Update all Streamlit components
+    document.querySelectorAll('.stApp, .stTextInput, .stButton, .stSelectbox').forEach(el => {
+        el.classList.toggle('dark-mode', darkMode);
+    });
+    
+    return true;
 }
+
+// Scroll to top function
+function scrollToTop() {
+    window.scrollTo({top: 0, behavior: 'smooth'});
+    document.querySelector('.main')?.scrollTo(0, 0);
+    document.querySelector('.block-container')?.scrollTo(0, 0);
+    return true;
+}
+
+// Initialize theme from localStorage
+document.addEventListener('DOMContentLoaded', function() {
+    const savedMode = localStorage.getItem('microfossilDarkMode');
+    if (savedMode) {
+        applyTheme(savedMode === 'true');
+    }
+    
+    // Create top overlay if it doesn't exist
+    if (!document.getElementById('android-top-overlay')) {
+        const overlay = document.createElement('div');
+        overlay.id = 'android-top-overlay';
+        overlay.style.position = 'fixed';
+        overlay.style.top = '0';
+        overlay.style.left = '0';
+        overlay.style.width = '100%';
+        overlay.style.height = '50px';
+        overlay.style.zIndex = '9999';
+        overlay.style.backgroundColor = window.getComputedStyle(document.body).backgroundColor;
+        document.body.appendChild(overlay);
+    }
+});
+
+// Listen for theme change messages
+window.addEventListener('message', function(event) {
+    if (event.data.type === 'setTheme') {
+        applyTheme(event.data.darkMode);
+        localStorage.setItem('microfossilDarkMode', event.data.darkMode);
+    }
+});
 </script>
-""")
+""", height=0)
+
+# CSS for dark mode and overlays
+st.markdown("""
+<style>
+    .dark-mode {
+        background-color: #121212 !important;
+        color: #ffffff !important;
+    }
+    .dark-mode .stApp {
+        background-color: #121212 !important;
+    }
+    .dark-mode .genus-box {
+        background-color: #424242 !important;
+        border-left-color: #bb86fc !important;
+    }
+    .dark-mode .progress-bar {
+        background-color: #333333 !important;
+    }
+    .dark-mode .progress-fill {
+        background: linear-gradient(90deg, #bb86fc, #3700b3) !important;
+    }
+    
+    /* Android overlay styles */
+    #android-top-overlay {
+        display: none; /* Initially hidden */
+    }
+</style>
+""", unsafe_allow_html=True)
+
 
 # ============ 3. THEN your other configurations ============
 MODEL_URL = st.secrets["MODEL_URL"]
