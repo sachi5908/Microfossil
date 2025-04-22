@@ -179,9 +179,9 @@ st.markdown("""
             width: 100%;
         }
         
-        /* Main content container */
+        /* Main content margin to prevent overlap */
         .main-content {
-            margin-top: 80px;
+            margin-top: 100px;
             padding: 1rem;
         }
         
@@ -191,29 +191,50 @@ st.markdown("""
             font-weight: 800;
             color: #3f51b5;
             margin: 0;
-            margin-bottom: 10px;
         }
         
-        /* Header image styling */
-        .header-image {
+        /* Genus prediction box */
+        .genus-container {
+            background-color: #e3f2fd;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            font-size: 2.4rem;
+            font-weight: 700;
+            text-align: center;
+            color: #0d47a1;
+        }
+        
+        /* Progress bar styling */
+        .progress-container {
+            background-color: #e0e0e0;
+            border-radius: 999px;
+            height: 24px;
             width: 100%;
-            max-height: 300px;
-            object-fit: contain;
-            margin: 15px 0;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            margin-bottom: 12px;
+            overflow: hidden;
         }
         
-        /* Note section styling */
-        .model-note {
-            margin-top: 10px;
-            margin-bottom: 20px;
-            padding: 15px;
-            border-radius: 8px;
-            border-left: 4px solid #3f51b5;
+        .progress-fill {
+            background-color: #1e88e5;
+            height: 100%;
+            color: white;
+            font-weight: 600;
+            text-align: center;
+            line-height: 24px;
         }
         
-        /* Rest of your existing styles... */
+        /* Section titles */
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
     </style>
 """, unsafe_allow_html=True)
 
@@ -225,48 +246,14 @@ st.markdown("""
     <div class="main-content">
 """, unsafe_allow_html=True)
 
-# Image display with robust error handling
-try:
-    from PIL import Image
-    import requests
-    from io import BytesIO
-    
-    # Fetch image from URL
-    response = requests.get("https://i.imgur.com/ZLRZknS.jpeg")
-    response.raise_for_status()  # Raise error for bad status
-    
-    # Open image and display
-    img = Image.open(BytesIO(response.content))
-    st.image(img, 
-             use_column_width=True,
-             caption="Microfossil Example",
-             output_format="auto",
-             class_="header-image")
-    
-except Exception as e:
-    st.warning(f"Couldn't load image: {str(e)}")
-    # Fallback placeholder
-    st.image("https://via.placeholder.com/800x300?text=Microfossil+Example",
-             use_column_width=True,
-             class_="header-image")
+# Main content
+st.markdown(
+    "<strong>Note:</strong> The model has been trained on the following genera: " +
+    ", ".join(f"<b>{genus}</b>" for genus in GENUS_LIST),
+    unsafe_allow_html=True
+)
 
-# Rest of your content remains the same
-st.markdown(f"""
-    <div class="model-note">
-        <strong>Note:</strong> The model has been trained on: 
-        {", ".join(f"<b>{genus}</b>" for genus in GENUS_LIST)}
-    </div>
-""", unsafe_allow_html=True)
-
-# File uploader with custom container
-upload_container = st.container()
-with upload_container:
-    uploaded_file = st.file_uploader(
-        "🖼️ Upload Image", 
-        type=["jpg", "jpeg", "png"],
-        help="Drag and drop file here\nLimit 200MB per file • JPG, JPEG, PNG"
-    )
-
+uploaded_file = st.file_uploader("🖼️ Upload Image", type=["jpg", "jpeg", "png"])
 
 if uploaded_file:
     col1, col2 = st.columns([1, 2])
