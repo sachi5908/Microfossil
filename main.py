@@ -254,6 +254,9 @@ st.markdown("""
     <div class="main-content">
 """, unsafe_allow_html=True)
 
+image = Image.open("pic.jpg")
+st.image(image, use_column_width=True) 
+
 # Note content
 st.markdown(f"""
     <div class="model-note">
