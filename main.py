@@ -192,7 +192,12 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-st.markdown("<div class='main-title'>🔬 Microfossils Recognizer</div>", unsafe_allow_html=True)
+st.markdown(f"""
+<div style='margin-top: 10px; font-size: 1.1rem; background-color: #f1f8e9; padding: 10px 15px; border-left: 5px solid #8bc34a; border-radius: 8px;'>
+✅ <strong>Note:</strong> The model has been trained on the following genera: 
+{', '.join(f"<b>{genus}</b>" for genus in GENUS_LIST)}.
+</div>
+""", unsafe_allow_html=True)
 st.markdown("Upload a microfossil image and let AI identify its morphological features and genus.")
 
 uploaded_file = st.file_uploader("🖼️ Upload Image", type=["jpg", "jpeg", "png"])
