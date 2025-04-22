@@ -8,6 +8,7 @@ import io
 import random
 from collections import defaultdict
 import google.generativeai as genai
+import base64
 
 # ------------------ Configuration ------------------
 MODEL_URL = st.secrets["MODEL_URL"]
@@ -254,8 +255,17 @@ st.markdown("""
     <div class="main-content">
 """, unsafe_allow_html=True)
 
-image = Image.open("pic.jpg")
-st.image(image, use_column_width=True) 
+with open("pic.jpg", "rb") as file:
+    img_data = file.read()
+    img_base64 = base64.b64encode(img_data).decode()
+
+st.markdown(f"""
+    <div style="width: 100%; margin-top: 1rem; margin-bottom: 1rem;">
+        <img src="data:image/jpeg;base64,{img_base64}" 
+             alt="Microfossils Banner" 
+             style="width: 100%; max-height: 280px; object-fit: cover; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+    </div>
+""", unsafe_allow_html=True)
 
 # Note content
 st.markdown(f"""
