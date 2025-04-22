@@ -165,6 +165,14 @@ st.markdown("""
         font-weight: 800;
         color: #3f51b5;
     }
+    .sticky-header {
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        background-color: white;
+        padding: 1rem 0;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
     .genus-box {
         background-color: #e3f2fd;
         padding: 1.2rem;
@@ -192,7 +200,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-st.markdown("<div class='main-title'>🔬 Microfossils Recognizer</div>", unsafe_allow_html=True)
+st.markdown("<div class='sticky-header'><div class='main-title'>🔬 Microfossils Recognizer</div></div>", unsafe_allow_html=True)
 st.markdown(
     "<strong>Note:</strong> The model has been trained on the following genera: " +
     ", ".join(f"<b>{genus}</b>" for genus in GENUS_LIST),
