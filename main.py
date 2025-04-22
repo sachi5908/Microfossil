@@ -9,6 +9,60 @@ import random
 from collections import defaultdict
 import google.generativeai as genai
 
+# ============ ADD DARK MODE CSS HERE ============
+st.markdown("""
+    <style>
+        :root {
+            color-scheme: light dark;
+        }
+        @media (prefers-color-scheme: dark) {
+            /* Main background */
+            body, .stApp {
+                background-color: #121212;
+                color: #ffffff;
+            }
+            
+            /* Text colors */
+            h1, h2, h3, h4, h5, h6, p, div, span {
+                color: #e0e0e0 !important;
+            }
+            
+            /* Your custom components */
+            .genus-box, .genus-container {
+                background-color: #424242 !important;
+                border-left-color: #bb86fc !important;
+                color: #ffffff !important;
+            }
+            
+            /* Progress bars */
+            .progress-bar, .progress-container {
+                background-color: #333333 !important;
+            }
+            .progress-fill {
+                background: linear-gradient(90deg, #bb86fc, #3700b3) !important;
+            }
+            
+            /* Form elements */
+            .stTextInput input, .stTextArea textarea, .stSelectbox select {
+                background-color: #333 !important;
+                color: #fff !important;
+                border-color: #555 !important;
+            }
+            
+            /* Buttons */
+            .stButton button {
+                background-color: #3700b3 !important;
+                color: white !important;
+                border-color: #bb86fc !important;
+            }
+            
+            /* File uploader */
+            .stFileUploader label {
+                color: #bb86fc !important;
+            }
+        }
+    </style>
+""", unsafe_allow_html=True)
 
 # ------------------ Configuration ------------------
 MODEL_URL = st.secrets["MODEL_URL"]
