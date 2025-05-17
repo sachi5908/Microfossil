@@ -396,16 +396,26 @@ if uploaded_file:
 
 st.markdown("""
 <script>
+// Wait for the DOM to be ready
+document.addEventListener("DOMContentLoaded", function() {
+    // Define scroll function
     window.scrollToTopFromAndroid = function() {
-        const anchor = document.getElementById("scrollTopAnchor");
-        if (anchor) {
-            anchor.scrollIntoView({ behavior: "smooth", block: "start" });
+        // Streamlit’s content is inside a .main .block-container
+        const container = document.querySelector('.main .block-container');
+        if (container) {
+            container.scrollTo({ top: 0, behavior: 'smooth' });
         } else {
-            window.scrollTo({ top: 0, behavior: "smooth" });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
-    }
+    };
+});
 </script>
 """, unsafe_allow_html=True)
+if st.button("Scroll to top (test)"):
+    st.markdown("""
+        <script>scrollToTopFromAndroid();</script>
+    """, unsafe_allow_html=True)
+
 
 # Close the content wrapper
 st.markdown("</div>", unsafe_allow_html=True)
