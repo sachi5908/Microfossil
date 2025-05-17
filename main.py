@@ -184,125 +184,129 @@ st.set_page_config(page_title="🦠 Microfossil Genus Classifier", layout="wide"
 
 # Custom CSS for sticky header and hidden elements
 st.markdown("""
-    <style>
-        /* Hide Streamlit default UI elements */
-        #MainMenu, header, footer {
-            visibility: hidden;
-        }
+<style>
+    /* Hide Streamlit default UI elements */
+    #MainMenu, header, footer {
+        visibility: hidden;
+    }
 
-        /* Sticky header styling */
+    /* Reset body margin and padding */
+    body {
+        margin: 0 !important;
+        padding: 0 !important;
+    
+    }
+
+    .stApp {
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    /* Sticky header */
         .sticky-header {
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            background-color: #ffffff;
-            border-radius: 12px;
-            padding: 1rem 2rem;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-wrap: wrap;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+        background-color: #ffffff;
+        padding: 1rem 2rem;
+        border-radius: 12px;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+        margin: 0 auto;
+        max-width: 90%;
+        margin-top: 2px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+
+    .main-title {
+        font-size: clamp(1.5rem, 5vw, 2rem);
+        font-weight: 800;
+        color: #0d47a1;
+        text-align: center;
+        max-width: 100%;
+    }
+    @media screen and (max-width: 600px) {
+        .sticky-header {
+            padding: 0.8rem 1rem;
+            max-width: 95%;
+            margin-top: 5px;
         }
 
-        /* Main content padding */
-        .main-content {
-            margin-top: 10px;
-            padding: 1rem;
-        }
-
-        /* Title styling inside sticky header */
         .main-title {
-            font-size: clamp(1.5rem, 5vw, 2rem);  /* Automatically scales */
-            font-weight: 800;
-            color: #0d47a1;
-            text-align: center;
-            word-wrap: break-word;
-            max-width: 100%;
+            font-size: 1.5rem;
         }
-        @media screen and (max-width: 600px) {
-            .sticky-header {
-                padding: 0.8rem 1rem;
-            }
+    }
 
-            .main-title {
-                font-size: 1.5rem;
-            }
-        }
-        /* Banner image styling */
-        .full-width-image {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            border-radius: 10px;
-            margin-bottom: 20px;
-        }
+    .main-content {
+        padding: 1rem;
+    }
 
-        /* Model note block */
-        .model-note {
-            background-color: #a5ffe0;
-            color: black;
-            padding: 15px;
-            border-radius: 10px;
-            border-left: 4px solid #3f51b5;
-            font-size: 0.95rem;
-            margin-bottom: 20px;
-        }
+    /* Other styles (unchanged) */
+    .full-width-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        border-radius: 10px;
+        margin-bottom: 20px;
+    }
 
-        /* Predicted genus box */
-        .genus-container {
-            background-color: #e3f2fd;
-            padding: 1.5rem;
-            border-radius: 12px;
-            margin-bottom: 1rem;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            font-size: 2.4rem;
-            font-weight: 700;
-            text-align: center;
-            color: #0d47a1;
-        }
+    .model-note {
+        background-color: #a5ffe0;
+        color: black;
+        padding: 15px;
+        border-radius: 10px;
+        border-left: 4px solid #3f51b5;
+        font-size: 0.95rem;
+        margin-bottom: 20px;
+    }
 
-        /* Progress bar container */
-        .progress-container {
-            background-color: #e0e0e0;
-            border-radius: 999px;
-            height: 24px;
-            width: 100%;
-            margin-bottom: 12px;
-            overflow: hidden;
-        }
+    .genus-container {
+        background-color: #e3f2fd;
+        padding: 1.5rem;
+        border-radius: 12px;
+        margin-bottom: 1rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        font-size: 2.4rem;
+        font-weight: 700;
+        text-align: center;
+        color: #0d47a1;
+    }
 
-        /* Progress bar fill */
-        .progress-fill {
-            background-color: #1e88e5;
-            height: 100%;
-            color: white;
-            font-weight: 600;
-            text-align: center;
-            line-height: 24px;
-        }
+    .progress-container {
+        background-color: #e0e0e0;
+        border-radius: 999px;
+        height: 24px;
+        width: 100%;
+        margin-bottom: 12px;
+        overflow: hidden;
+    }
 
-        /* Section titles */
-        .section-title {
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin-top: 2rem;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.6rem;
-        }
+    .progress-fill {
+        background-color: #1e88e5;
+        height: 100%;
+        color: white;
+        font-weight: 600;
+        text-align: center;
+        line-height: 24px;
+    }
 
-        /* Streamlit app padding fix */
-        body { 
-            margin-bottom: 80px !important; 
-        }
-        .stApp {
-            padding-bottom: 70px !important;
-        }
-    </style>
+    .section-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+    }
+</style>
 """, unsafe_allow_html=True)
+
 
 # Fixed header container
 st.markdown("""
