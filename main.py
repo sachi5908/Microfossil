@@ -16,9 +16,30 @@ MODEL_PATH = st.secrets["MODEL_PATH"]
 API_KEYS = st.secrets["KEYS"].split(",")
 
 GENUS_LIST = [
-    'Ammobaculites', 'Dorothia', 'Eggerella', 'Gaudryna',
-    'Lituola', 'Quinqueloculina', 'Spiroloculina',
-    'Triloculina', 'Tritexia', 'Trochamminoides', 'Vernuilina'
+    "Ammobaculites",
+    "Bolivina",
+    "Bulimina",
+    "Dorothia",
+    "Eggerella",
+    "Frondicularia",
+    "Gaudryna",
+    "Globigerina",
+    "Globotruncana",
+    "Gublerina",
+    "Heterohelix",
+    "Lagena",
+    "Lenticulina",
+    "Lituola",
+    "Marginulina",
+    "Neoflabellina",
+    "Nodosaria",
+    "Pseudotextularia",
+    "Quinqueloculina",
+    "Spiroloculina",
+    "Triloculina",
+    "Tritexia",
+    "Trochamminoides",
+    "Vernuilina"
 ]
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
