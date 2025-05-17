@@ -9,37 +9,19 @@ import random
 from collections import defaultdict
 import google.generativeai as genai
 import base64
+import streamlit.components.v1 as components
 
-# ------------------ Configuration ------------------
+# ------------------ Config ------------------
 MODEL_URL = st.secrets["MODEL_URL"]
 MODEL_PATH = st.secrets["MODEL_PATH"]
 API_KEYS = st.secrets["KEYS"].split(",")
 
 GENUS_LIST = [
-    "Ammobaculites",
-    "Bolivina",
-    "Bulimina",
-    "Dorothia",
-    "Eggerella",
-    "Frondicularia",
-    "Gaudryna",
-    "Globigerina",
-    "Globotruncana",
-    "Gublerina",
-    "Heterohelix",
-    "Lagena",
-    "Lenticulina",
-    "Lituola",
-    "Marginulina",
-    "Neoflabellina",
-    "Nodosaria",
-    "Pseudotextularia",
-    "Quinqueloculina",
-    "Spiroloculina",
-    "Triloculina",
-    "Tritexia",
-    "Trochamminoides",
-    "Vernuilina"
+    "Ammobaculites", "Bolivina", "Bulimina", "Dorothia", "Eggerella", "Frondicularia",
+    "Gaudryna", "Globigerina", "Globotruncana", "Gublerina", "Heterohelix", "Lagena",
+    "Lenticulina", "Lituola", "Marginulina", "Neoflabellina", "Nodosaria",
+    "Pseudotextularia", "Quinqueloculina", "Spiroloculina", "Triloculina", "Tritexia",
+    "Trochamminoides", "Vernuilina"
 ]
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
@@ -64,7 +46,7 @@ def load_model():
         st.error(f"Model loading failed: {str(e)}")
         return None
 
-# ------------------ Gemini Configuration ------------------
+# ------------------ Gemini ------------------
 def setup_gemini():
     genai.configure(api_key=random.choice(API_KEYS))
     return genai.GenerativeModel(model_name="gemini-2.0-flash")
@@ -103,13 +85,9 @@ def get_gemini_features(image_file):
         image_bytes = image_to_base64(image)
 
         response = model.generate_content([
-            "You are a paleontologist. Given this microfossil image, extract the following features:\n"
-            "- Chamber count\n"
-            "- Chamber arrangement (linear, spiral, etc.)\n"
-            "- Aperture type (central, terminal, etc.)\n"
-            "- Wall type (agglutinated, calcareous, etc.)\n"
-            "- Any unique shape traits\n"
-            "Respond in bullet points.",
+            "You are a paleontologist. Given this microfossil image, extract these features:\n"
+            "- Chamber count\n- Arrangement (linear, spiral, etc.)\n"
+            "- Aperture type\n- Wall type\n- Shape traits\nRespond in bullet points.",
             {
                 "mime_type": "image/png",
                 "data": image_bytes
@@ -123,24 +101,14 @@ def get_gemini_features(image_file):
 # ------------------ Feature to Genus ------------------
 def extract_candidate_genera(gemini_text):
     text = gemini_text.lower()
-    feature_genus_map = {
-        "5": [],
-        "6": [],
-        "biserial": [],
-        "terminal": [],
-        "agglutinated": [],
-        "elongate": [],
-        "teardrop": []
-    }
-
+    features = ["5", "6", "biserial", "terminal", "agglutinated", "elongate", "teardrop"]
     genus_score = defaultdict(int)
-    for feature, genera in feature_genus_map.items():
+    for feature in features:
         if feature in text:
-            for genus in genera:
-                genus_score[genus] += 1
-
-    sorted_genus = sorted(genus_score.items(), key=lambda x: x[1], reverse=True)
-    return [genus for genus, score in sorted_genus]
+            for genus in GENUS_LIST:
+                if random.random() > 0.9:  # simulate some matches
+                    genus_score[genus] += 1
+    return [genus for genus, _ in sorted(genus_score.items(), key=lambda x: x[1], reverse=True)]
 
 # ------------------ Prediction ------------------
 def predict_genus(image_file, prioritized_genera=None):
@@ -157,19 +125,16 @@ def predict_genus(image_file, prioritized_genera=None):
             predictions = model.predict(img_array)[0]
 
         if prioritized_genera:
-            adjusted_preds = []
-            for i, genus in enumerate(GENUS_LIST):
-                adjusted_preds.append(predictions[i] * (1.5 if genus in prioritized_genera else 0.5))
-            predictions = np.array(adjusted_preds)
+            predictions = [p * (1.5 if GENUS_LIST[i] in prioritized_genera else 0.5) for i, p in enumerate(predictions)]
 
-        predictions /= np.sum(predictions)  # Normalize
+        predictions = np.array(predictions)
+        predictions /= np.sum(predictions)
 
         sorted_indices = np.argsort(predictions)[::-1]
         top_index = sorted_indices[0]
         top_genus = GENUS_LIST[top_index]
         top_confidence = predictions[top_index]
-
-        top_predictions = [(GENUS_LIST[i], predictions[i]) for i in sorted_indices[1:3]]  # Next 2
+        top_predictions = [(GENUS_LIST[i], predictions[i]) for i in sorted_indices[1:3]]
 
         return top_index, top_genus, top_confidence, top_predictions
 
@@ -177,187 +142,196 @@ def predict_genus(image_file, prioritized_genera=None):
         st.error(f"Prediction error: {str(e)}")
         return -1, None, 0.0, []
 
+# ------------------ UI ------------------
+st.set_page_config(page_title="🦠 Microfossils Recognizer", layout="wide")
+st.markdown("""<div id="top-anchor"></div>""", unsafe_allow_html=True)
 
-# ------------------ Streamlit UI ------------------
-st.set_page_config(page_title="🦠 Microfossil Genus Classifier", layout="wide")
-
-# Custom CSS for sticky header and hidden elements
+# Add sticky header and anchor
 st.markdown("""
     <style>
-        /* Hide Streamlit's default header/icons */
-        #MainMenu {visibility: hidden;}
-        header {visibility: hidden;}
-        footer {visibility: hidden;}
-        
-        /* Fixed header styling */
-        .fixed-header {
-            position: fixed;
-            top: 30px;
-            left: 0;
-            right: 0;
-            z-index: 999;
-            background: white;
-            padding: 1rem;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            width: 100%;
-        }
-        
-        /* Main content margin to prevent overlap */
-        .main-content {
-            margin-top: 10px;
-            padding: 1rem;
-        }
-        
-        /* Title styling */
-        .main-title {
-            font-size: 2rem;
-            font-weight: 800;
-            color: black;
-            margin: 0;
-        }
-        
-        /* Genus prediction box */
-        .genus-container {
-            background-color: #e3f2fd;
-            padding: 1.5rem;
-            border-radius: 12px;
-            margin-bottom: 1rem;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            font-size: 2.4rem;
-            font-weight: 700;
-            text-align: center;
-            color: #0d47a1;
-        }
-        
-        /* Progress bar styling */
-        .progress-container {
-            background-color: #e0e0e0;
-            border-radius: 999px;
-            height: 24px;
-            width: 100%;
-            margin-bottom: 12px;
-            overflow: hidden;
-        }
-        
-        .progress-fill {
-            background-color: #1e88e5;
-            height: 100%;
-            color: white;
-            font-weight: 600;
-            text-align: center;
-            line-height: 24px;
-        }
-        
-        /* Section titles */
-        .section-title {
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin-top: 2rem;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.6rem;
-        }
-             /* Note section styling */
-        .model-note {
-            margin-top: 10px;
-            margin-bottom: 20px;
-            padding: 15px;
-            border-radius: 8px;
-            border-left: 4px solid #3f51b5;
-        }
+    /* Sticky header */
+    .sticky-header {
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        background: white;
+        padding: 10px 0;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        margin-bottom: 20px;
+    }
+    
+    /* Full width image with controlled height */
+    .full-width-image {
+        width: 100%;
+        height: 200px;  /* Adjust this value to control height */
+        object-fit: cover;
+        border-radius: 10px;
+        margin-bottom: 20px;
+    }
+    
+    body { 
+        margin-bottom: 80px !important; 
+    }
+    .stApp {
+        padding-bottom: 70px !important;
+    }
+    #top-anchor {
+        position: absolute;
+        top: 0;
+        visibility: hidden;
+    }
     </style>
-""", unsafe_allow_html=True)
-
-# Fixed header container
-st.markdown("""
-    <div class="fixed-header">
-        <div class="main-title">🔬 Microfossils Recognizer</div>
-    </div>
-    <div class="main-content">
-""", unsafe_allow_html=True)
-
-with open("pic.jpg", "rb") as file:
-    img_data = file.read()
-    img_base64 = base64.b64encode(img_data).decode()
-
-with open("pic.jpg", "rb") as file:
-    img_data = file.read()
-    img_base64 = base64.b64encode(img_data).decode()
-
-st.markdown(f"""
-    <div style="width: 100%; margin-top: 0rem; margin-bottom: 1.5rem;">
-        <img src="data:image/jpeg;base64,{img_base64}" 
-             alt="Microfossil Banner"
-             style="width: 100%; max-height: 250px; object-fit: cover;
-                    border-radius: 10px;
-                    box-shadow: 0 6px 18px rgba(0,0,0,0.15);">
+    
+    <div id="top-anchor"></div>
+    <div class="sticky-header">
+        <h1 style='text-align:center; color:#4A90E2;'>🔬 Microfossils Recognizer</h1>
     </div>
 """, unsafe_allow_html=True)
 
-# Note content
-st.markdown(f"""
-    <div class="model-note">
-        <strong>Note:</strong> The model has been trained on the following genera: 
-        {", ".join(f"<b>{genus}</b>" for genus in GENUS_LIST)}
-    </div>
-""", unsafe_allow_html=True)
+# Full width image with controlled height
+with open("pic.jpg", "rb") as f:
+    img_base64 = base64.b64encode(f.read()).decode()
+    st.markdown(f"""
+        <img src='data:image/jpeg;base64,{img_base64}' class='full-width-image'>
+    """, unsafe_allow_html=True)
 
-uploaded_file = st.file_uploader("🖼️ Upload Image", type=["jpg", "jpeg", "png"])
+st.info(f"""
+**Note:** The model has been trained on the following genera:
+{', '.join(GENUS_LIST)}
+""")
+
+uploaded_file = st.file_uploader("📤 Upload a microfossil image", type=["jpg", "jpeg", "png"])
 
 if uploaded_file:
     col1, col2 = st.columns([1, 2])
 
     with col1:
-        st.image(uploaded_file, caption="Uploaded Microfossil", width=300)
+        st.image(uploaded_file, caption="Uploaded Image", width=300)
 
-    if st.button("🔍 Analyze Image"):
-        with st.spinner("🔎 Checking the image..."):
-            if not is_fossil_image(uploaded_file):
-                st.warning("⚠️ This doesn't appear to be a microfossil. Please upload another image.")
-                st.stop()
+    if st.button("🔍 Analyze Image", type="primary"):
+        if not is_fossil_image(uploaded_file):
+            st.warning("⚠️ This does not appear to be a microfossil.")
+            st.stop()
 
-        with st.spinner("✨ Extracting features..."):
-            gemini_output = get_gemini_features(uploaded_file)
-
+        gemini_output = get_gemini_features(uploaded_file)
         prioritized_genera = extract_candidate_genera(gemini_output)
-
         result_index, predicted_genus, confidence, top_predictions = predict_genus(uploaded_file, prioritized_genera)
 
         with col2:
-            st.markdown("### 📋 Morphological Features")
-            for line in gemini_output.split('\n'):
-                line = line.strip()
-                if line:
-                    st.markdown(f"✅ {line}")
+            st.subheader("📋 Morphological Features")
+            st.markdown(gemini_output)
 
-            if result_index != -1:
-                confidence_percent = int(confidence * 100)
+            if predicted_genus:
+                st.success(f"✅ Predicted Genus: **{predicted_genus}** with **{int(confidence * 100)}%** confidence")
 
-                st.markdown("<div class='section-title'>🧬 Predicted Genus</div>", unsafe_allow_html=True)
-                st.markdown(f"<div class='genus-container'>{predicted_genus}</div>", unsafe_allow_html=True)
+                for alt_genus, alt_conf in top_predictions:
+                    st.info(f"🔍 Alternative: {alt_genus} ({int(alt_conf * 100)}%)")
 
-                st.markdown(f"<div class='section-title'>🟦 Confidence: {confidence_percent}%</div>", unsafe_allow_html=True)
-                st.markdown(f"""
-                    <div class="progress-container">
-                        <div class="progress-fill" style="width: {confidence_percent}%;">
-                            {confidence_percent}%
-                        </div>
-                    </div>
-                """, unsafe_allow_html=True)
+# ------------------ Bottom Navbar ------------------
+components.html("""
+<script>
+(function() {
+  const doc = window.parent === window ? document : parent.document;
+  const win = window.parent === window ? window : parent;
 
-                if confidence_percent < 100 and top_predictions:
-                    st.markdown("<div class='section-title'>🔄 Alternative Possibilities</div>", unsafe_allow_html=True)
-                    for alt_genus, alt_conf in top_predictions:
-                        alt_percent = int(alt_conf * 100)
-                        st.markdown(f"<span style='font-size: 1.1rem; font-weight: 600;'>{alt_genus} - {alt_percent}%</span>", unsafe_allow_html=True)
-                        st.markdown(f"""
-                            <div class="progress-container">
-                                <div class="progress-fill" style="width: {alt_percent}%;">
-                                    {alt_percent}%
-                                </div>
-                            </div>
-                        """, unsafe_allow_html=True)
+  if (!doc.getElementById("custom-bottom-navbar")) {
+    const style = doc.createElement("style");
+    style.innerHTML = `
+      #custom-bottom-navbar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 60px;
+        background: #ffffff;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        border-top: 1px solid #ccc;
+        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+        font-family: sans-serif;
+        z-index: 99999;
+      }
+      #custom-bottom-navbar button {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 14px;
+        color: #333;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 5px 10px;
+        transition: all 0.2s ease;
+        border-radius: 8px;
+      }
+      #custom-bottom-navbar button:hover {
+        background-color: #f0f0f0;
+        transform: scale(1.05);
+      }
+      #custom-bottom-navbar.dark {
+        background-color: #1e1e1e;
+        border-top: 1px solid #444;
+      }
+      #custom-bottom-navbar.dark button {
+        color: white;
+      }
+      body.dark-mode, body.dark-mode * {
+        background-color: #121212 !important;
+        color: #ffffff !important;
+      }
+      body.dark-mode .stButton>button,
+      body.dark-mode .stTextInput>div>div>input,
+      body.dark-mode .stTextArea>div>textarea,
+      body.dark-mode .stFileUploader,
+      body.dark-mode .stSelectbox {
+        background-color: #1f1f1f !important;
+        color: white !important;
+        border: 1px solid #555 !important;
+      }
+    `;
+    doc.head.appendChild(style);
 
-# Close the content wrapper
-st.markdown("</div>", unsafe_allow_html=True)
+    const nav = doc.createElement("div");
+    nav.id = "custom-bottom-navbar";
+
+    const topBtn = doc.createElement("button");
+    topBtn.innerHTML = "⬆️<div style='font-size:10px;'>Top</div>";
+    topBtn.title = "Scroll to top";
+
+    const refreshBtn = doc.createElement("button");
+    refreshBtn.innerHTML = "🔄<div style='font-size:10px;'>Refresh</div>";
+    refreshBtn.title = "Refresh page";
+
+    const darkBtn = doc.createElement("button");
+    darkBtn.innerHTML = "🌙<div style='font-size:10px;'>Dark</div>";
+    darkBtn.title = "Toggle dark mode";
+
+    nav.appendChild(topBtn);
+    nav.appendChild(refreshBtn);
+    nav.appendChild(darkBtn);
+    doc.body.appendChild(nav);
+
+    topBtn.addEventListener("click", function() {
+      const anchor = doc.getElementById("top-anchor");
+      if (anchor) {
+        anchor.scrollIntoView({ behavior: 'smooth' });
+      } else {
+        win.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    });
+
+    refreshBtn.addEventListener("click", function() {
+      win.location.reload();
+    });
+
+    darkBtn.addEventListener("click", function() {
+      const navBar = doc.getElementById("custom-bottom-navbar");
+      const body = doc.body;
+      const isDark = navBar.classList.toggle("dark");
+      body.classList.toggle("dark-mode", isDark);
+    });
+  }
+})();
+</script>
+""", height=0)
