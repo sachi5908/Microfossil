@@ -394,5 +394,33 @@ if uploaded_file:
                             </div>
                         """, unsafe_allow_html=True)
 
+components.html("""
+<script>
+(function() {
+  window.scrollToTopFromAndroid = function() {
+    const anchor = document.getElementById("top-anchor");
+    if (anchor) {
+      anchor.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  window.toggleDarkModeFromAndroid = function() {
+    const body = document.body;
+    const isDark = body.classList.toggle("dark-mode");
+
+    if (isDark) {
+      body.style.backgroundColor = "#121212";
+      body.style.color = "#ffffff";
+    } else {
+      body.style.backgroundColor = "";
+      body.style.color = "";
+    }
+  };
+})();
+</script>
+""", height=0)
+
 # Close the content wrapper
 st.markdown("</div>", unsafe_allow_html=True)
