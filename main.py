@@ -10,6 +10,8 @@ import random
 from collections import defaultdict
 import google.generativeai as genai
 import base64
+import json
+import re
 
 # ------------------ Configuration ------------------
 MODEL_URL = st.secrets["MODEL_URL"]
@@ -96,7 +98,6 @@ def is_fossil_image(image_file):
         st.error(f"❌ Fossil check failed: {str(e)}")
         return False
 
-# ------------------ Feature Extraction ------------------
 def get_gemini_features(image_file):
     try:
         image = Image.open(image_file).convert("RGB")
@@ -104,13 +105,20 @@ def get_gemini_features(image_file):
         image_bytes = image_to_base64(image)
 
         response = model.generate_content([
-            "You are a paleontologist. Given this microfossil image, extract the following features:\n"
-            "- Chamber count\n"
-            "- Chamber arrangement (linear, spiral, etc.)\n"
-            "- Aperture type (central, terminal, etc.)\n"
-            "- Wall type (agglutinated, calcareous, etc.)\n"
-            "- Any unique shape traits\n"
-            "Respond in bullet points.",
+            """You are an expert paleontologist. Given this microfossil image, extract the following features and return them as a structured JSON object with keys exactly as shown:
+
+{
+  "chamber_arrangement": "e.g., uniserial, biserial, triserial, spiral (planispiral, trochospiral, involute, etc.)",
+  "aperture": "e.g., terminal, central, interiomarginal, umbilical",
+  "wall_type": "e.g., agglutinated, calcareous, porcelaneous, perforated, imperforated",
+  "coiling": {
+    "present": true or false,
+    "type": "e.g., planispiral, trochospiral, involute, if present"
+  },
+  "traits": ["list of unique shape traits like unilocular, flattened, spined, etc."]
+}
+
+If any field is not observable, write null or an empty list.""",
             {
                 "mime_type": "image/png",
                 "data": image_bytes
@@ -122,24 +130,67 @@ def get_gemini_features(image_file):
         return f"❌ Gemini error: {str(e)}"
 
 # ------------------ Feature to Genus ------------------
+import json
+from collections import defaultdict
+
 def extract_candidate_genera(gemini_text):
-    text = gemini_text.lower()
+    try:
+        data = json.loads(gemini_text)  # Now expecting proper JSON
+    except json.JSONDecodeError:
+        return []  # If Gemini fails to return valid JSON
+
     feature_genus_map = {
-        "5": [],
-        "6": [],
-        "biserial": [],
-        "terminal": [],
-        "agglutinated": [],
-        "elongate": [],
-        "teardrop": []
+        "unilocular": ["Legena"],
+        "flattened": ["Frondicularia", "Neoflabellina"],
+        "uniserial": ["Lituola", "Ammobaculites", "Nodosaria", "Frondicularia", "Marginulina", "Neoflabellina"],
+        "biserial": ["Dorothia", "Heterohelix", "Pseudotextularia", "Gublerina", "Bulimina", "Bolivina"],
+        "triserial": ["Vernuilina", "Tritexia", "Bulimina"],
+        "trochospiral": ["Eggerella", "Globigerina", "Globotruncana"],
+        "steptospiral": ["Spiroloculina", "Quinqueloculina", "Triloculina"],
+        "early triserial": ["Gaudryna"],
+        "early trochospiral": ["Dorothia"],
+        "terminal": ["Ammobaculites", "Lituola", "Quinqueloculina", "Triloculina", "Nodosaria", "Frondicularia", "Lenticulina", "Marginulina", "Neoflabellina", "Gublerina"],
+        "interiomarginal": ["Trochamminoides", "Tritexia", "Gaudryna", "Dorothia", "Eggerella", "Globotruncana", "Heterohelix", "Pseudotextularia", "Bulimina"],
+        "umbilical": ["Globigerina", "Globotruncana"],
+        "agglutinated": ["Lituola", "Ammobaculites", "Trochamminoides", "Vernuilina", "Gaudryna", "Tritexia", "Dorothia", "Eggerella"],
+        "calcareous": ["Spiroloculina", "Quinqueloculina", "Triloculina", "Nodosaria", "Legena", "Frondicularia", "Lenticulina", "Marginulina", "Neoflabellina", "Globigerina", "Globotruncana", "Heterohelix", "Pseudotextularia", "Gublerina", "Bulimina", "Bolivina"],
+        "imperforated": ["Spiroloculina"],
+        "perforated": ["Nodosaria", "Legena", "Lenticulina", "Marginulina", "Neoflabellina", "Globigerina", "Globotruncana", "Pseudotextularia", "Gublerina", "Bulimina", "Bolivina"],
+        "porcellaneous": ["Spiroloculina", "Quinqueloculina", "Triloculina"],
+        "coiling": ["Trochamminoides"],
+        "planispiral": ["Trochamminoides", "Lenticulina"],
+        "early planispirally": ["Lituola"]
     }
 
     genus_score = defaultdict(int)
-    for feature, genera in feature_genus_map.items():
-        if feature in text:
-            for genus in genera:
+
+    # Match single string features
+    for key in ["chamber_arrangement", "aperture", "wall_type"]:
+        value = data.get(key)
+        if value:
+            value = value.lower()
+            if value in feature_genus_map:
+                for genus in feature_genus_map[value]:
+                    genus_score[genus] += 1
+
+    # Handle coiling
+    coiling = data.get("coiling", {})
+    if isinstance(coiling, dict):
+        if coiling.get("present") and coiling.get("type"):
+            coiling_type = coiling["type"].lower()
+            if coiling_type in feature_genus_map:
+                for genus in feature_genus_map[coiling_type]:
+                    genus_score[genus] += 1
+
+    # Handle traits (list)
+    traits = data.get("traits", [])
+    for trait in traits:
+        trait = trait.lower()
+        if trait in feature_genus_map:
+            for genus in feature_genus_map[trait]:
                 genus_score[genus] += 1
 
+    # Return sorted genus list
     sorted_genus = sorted(genus_score.items(), key=lambda x: x[1], reverse=True)
     return [genus for genus, score in sorted_genus]
 
@@ -243,6 +294,7 @@ st.markdown("""
     }
 
     .main-content {
+
         padding: 1rem;
     }
 
@@ -364,12 +416,48 @@ if uploaded_file:
         result_index, predicted_genus, confidence, top_predictions = predict_genus(uploaded_file, prioritized_genera)
 
         with col2:
-            st.markdown("### 📋 Morphological Features")
-            for line in gemini_output.split('\n'):
-                line = line.strip()
-                if line:
-                    st.markdown(f"✅ {line}")
+            st.markdown("""
+<div class="model-note">
+⚠️ <strong>Disclaimer:</strong> Extracted features are generated by an AI model and may occasionally be incomplete or incorrect due to image quality, fossil damage, or complex morphology. Please verify with expert judgment where needed.
+</div>
+""", unsafe_allow_html=True)
 
+            st.markdown("### 📋 Morphological Features")
+
+            try:
+                # Clean Gemini's response if wrapped in ```json ... ```
+                cleaned_text = re.sub(r"```(?:json)?\s*([\s\S]*?)\s*```", r"\1", gemini_output).strip()
+
+                parsed = json.loads(cleaned_text)
+
+                if parsed.get("chamber_arrangement"):
+                    st.markdown(f"✅ **Chamber Arrangement:** {parsed['chamber_arrangement']}")
+
+                if parsed.get("aperture"):
+                    st.markdown(f"✅ **Aperture Type:** {parsed['aperture']}")
+
+                if parsed.get("wall_type"):
+                    st.markdown(f"✅ **Wall Type:** {parsed['wall_type']}")
+
+                coiling = parsed.get("coiling", {})
+                if isinstance(coiling, dict):
+                    if coiling.get("present"):
+                        coil_type = coiling.get("type", "unspecified")
+                        st.markdown(f"✅ **Coiling:** Yes ({coil_type})")
+                    else:
+                        st.markdown("✅ **Coiling:** No")
+
+                traits = parsed.get("traits", [])
+                if traits:
+                    trait_list = ', '.join(traits)
+                    st.markdown(f"✅ **Shape Traits:** {trait_list}")
+
+            except json.JSONDecodeError:
+                st.error("❌ Failed to parse morphological features. Invalid JSON format.")
+            except Exception as e:
+                st.error(f"❌ Error displaying features: {str(e)}")
+
+            # ✅ Prediction Output
             if result_index != -1:
                 confidence_percent = int(confidence * 100)
 
@@ -379,9 +467,7 @@ if uploaded_file:
                 st.markdown(f"<div class='section-title'>🟦 Confidence: {confidence_percent}%</div>", unsafe_allow_html=True)
                 st.markdown(f"""
                     <div class="progress-container">
-                        <div class="progress-fill" style="width: {confidence_percent}%;">
-                            {confidence_percent}%
-                        </div>
+                        <div class="progress-fill" style="width: {confidence_percent}%;">{confidence_percent}%</div>
                     </div>
                 """, unsafe_allow_html=True)
 
@@ -392,9 +478,7 @@ if uploaded_file:
                         st.markdown(f"<span style='font-size: 1.1rem; font-weight: 600;'>{alt_genus} - {alt_percent}%</span>", unsafe_allow_html=True)
                         st.markdown(f"""
                             <div class="progress-container">
-                                <div class="progress-fill" style="width: {alt_percent}%;">
-                                    {alt_percent}%
-                                </div>
+                                <div class="progress-fill" style="width: {alt_percent}%;">{alt_percent}%</div>
                             </div>
                         """, unsafe_allow_html=True)
 
