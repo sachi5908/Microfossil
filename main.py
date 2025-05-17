@@ -106,7 +106,7 @@ def extract_candidate_genera(gemini_text):
     for feature in features:
         if feature in text:
             for genus in GENUS_LIST:
-                if random.random() > 0.9:  # simulate some matches
+                if random.random() > 0.9:
                     genus_score[genus] += 1
     return [genus for genus, _ in sorted(genus_score.items(), key=lambda x: x[1], reverse=True)]
 
@@ -144,22 +144,26 @@ def predict_genus(image_file, prioritized_genera=None):
 
 # ------------------ UI ------------------
 st.set_page_config(page_title="🦠 Microfossils Recognizer", layout="wide")
-st.markdown("""<div id="top-anchor"></div>""", unsafe_allow_html=True)
 
-# Add sticky header and anchor
+# Custom CSS to hide Streamlit toolbar and fix layout
 st.markdown("""
     <style>
-    /* Hide Streamlit's GitHub, Fork, and Theme icons in top right */
     [data-testid="stToolbar"] {
         visibility: hidden !important;
         height: 0px !important;
     }
-
-    /* Optional: Remove top padding left behind */
     .stApp {
         padding-top: 0rem !important;
+        padding-bottom: 80px !important;
     }
-    /* Sticky header */
+    </style>
+""", unsafe_allow_html=True)
+
+st.markdown("""<div id="top-anchor"></div>""", unsafe_allow_html=True)
+
+# Sticky header and top content
+st.markdown("""
+    <style>
     .sticky-header {
         position: sticky;
         top: 0;
@@ -169,67 +173,28 @@ st.markdown("""
         box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         margin-bottom: 20px;
     }
-    
-    /* Full width image with controlled height */
     .full-width-image {
         width: 100%;
-        height: 200px;  /* Adjust this value to control height */
+        height: 200px;
         object-fit: cover;
         border-radius: 10px;
         margin-bottom: 20px;
     }
-    
-    body { 
-        margin-bottom: 80px !important; 
-    }
-    .stApp {
-        padding-bottom: 70px !important;
-    }
-    #top-anchor {
-        position: absolute;
-        top: 0;
-        visibility: hidden;
-    }
-
-    #custom-bottom-navbar {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        height: 60px;
-        background: #ffffff;
-        display: flex;
-        justify-content: space-around;
-        align-items: center;
-        border-top: 1px solid #ccc;
-        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
-        font-family: sans-serif;
-        z-index: 10000 !important;  /* Make it higher than Streamlit icons */
-    }
-    /* Fix z-index of Streamlit top-right buttons */
-    [data-testid="stDecoration"] {
-        z-index: 1 !important;
-    }
-
-    /* Ensure custom bottom navbar is on top */
-    #custom-bottom-navbar {
-        z-index: 10000 !important;
-    }
     </style>
-    
-    <div id="top-anchor"></div>
+
     <div class="sticky-header">
         <h1 style='text-align:center; color:#4A90E2;'>🔬 Microfossils Recognizer</h1>
     </div>
 """, unsafe_allow_html=True)
 
-# Full width image with controlled height
+# Image preview
 with open("pic.jpg", "rb") as f:
     img_base64 = base64.b64encode(f.read()).decode()
     st.markdown(f"""
         <img src='data:image/jpeg;base64,{img_base64}' class='full-width-image'>
     """, unsafe_allow_html=True)
 
+# Info and uploader
 st.info(f"""
 **Note:** The model has been trained on the following genera:
 {', '.join(GENUS_LIST)}
@@ -262,7 +227,7 @@ if uploaded_file:
                 for alt_genus, alt_conf in top_predictions:
                     st.info(f"🔍 Alternative: {alt_genus} ({int(alt_conf * 100)}%)")
 
-# ------------------ Bottom Navbar ------------------
+# ------------------ Floating Bottom Navbar ------------------
 components.html("""
 <script>
 (function() {
@@ -304,33 +269,6 @@ components.html("""
         background-color: #f0f0f0;
         transform: scale(1.05);
       }
-
-      /* Force Streamlit decorations lower */
-      [data-testid="stDecoration"] {
-        z-index: 1 !important;
-      }
-
-      /* Optional dark mode support */
-      #custom-bottom-navbar.dark {
-        background-color: #1e1e1e;
-        border-top: 1px solid #444;
-      }
-      #custom-bottom-navbar.dark button {
-        color: white;
-      }
-      body.dark-mode, body.dark-mode * {
-        background-color: #121212 !important;
-        color: #ffffff !important;
-      }
-      body.dark-mode .stButton>button,
-      body.dark-mode .stTextInput>div>div>input,
-      body.dark-mode .stTextArea>div>textarea,
-      body.dark-mode .stFileUploader,
-      body.dark-mode .stSelectbox {
-        background-color: #1f1f1f !important;
-        color: white !important;
-        border: 1px solid #555 !important;
-      }
     `;
     doc.head.appendChild(style);
 
@@ -345,13 +283,8 @@ components.html("""
     refreshBtn.innerHTML = "🔄<div style='font-size:10px;'>Refresh</div>";
     refreshBtn.title = "Refresh page";
 
-    const darkBtn = doc.createElement("button");
-    darkBtn.innerHTML = "🌙<div style='font-size:10px;'>Dark</div>";
-    darkBtn.title = "Toggle dark mode";
-
     nav.appendChild(topBtn);
     nav.appendChild(refreshBtn);
-    nav.appendChild(darkBtn);
     doc.body.appendChild(nav);
 
     topBtn.addEventListener("click", function() {
@@ -366,15 +299,7 @@ components.html("""
     refreshBtn.addEventListener("click", function() {
       win.location.reload();
     });
-
-    darkBtn.addEventListener("click", function() {
-      const navBar = doc.getElementById("custom-bottom-navbar");
-      const body = doc.body;
-      const isDark = navBar.classList.toggle("dark");
-      body.classList.toggle("dark-mode", isDark);
-    });
   }
 })();
 </script>
 """, height=0)
-
