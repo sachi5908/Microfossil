@@ -241,7 +241,8 @@ st.markdown("""
 
         /* Model note block */
         .model-note {
-            background-color: #d87dff;
+            background-color: #69fdba;
+            color: black;
             padding: 15px;
             border-radius: 10px;
             border-left: 4px solid #3f51b5;
