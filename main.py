@@ -181,7 +181,6 @@ def predict_genus(image_file, prioritized_genera=None):
 
 # ------------------ Streamlit UI ------------------
 st.set_page_config(page_title="🦠 Microfossil Genus Classifier", layout="wide")
-st.markdown('<div id="top-anchor"></div>', unsafe_allow_html=True)
 
 # Custom CSS for sticky header and hidden elements
 st.markdown("""
@@ -393,34 +392,6 @@ if uploaded_file:
                                 </div>
                             </div>
                         """, unsafe_allow_html=True)
-
-components.html("""
-<script>
-(function() {
-  window.scrollToTopFromAndroid = function() {
-    const anchor = document.getElementById("top-anchor");
-    if (anchor) {
-      anchor.scrollIntoView({ behavior: 'smooth' });
-    } else {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  };
-
-  window.toggleDarkModeFromAndroid = function() {
-    const body = document.body;
-    const isDark = body.classList.toggle("dark-mode");
-
-    if (isDark) {
-      body.style.backgroundColor = "#121212";
-      body.style.color = "#ffffff";
-    } else {
-      body.style.backgroundColor = "";
-      body.style.color = "";
-    }
-  };
-})();
-</script>
-""", height=0)
 
 # Close the content wrapper
 st.markdown("</div>", unsafe_allow_html=True)
