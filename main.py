@@ -1,5 +1,6 @@
 import streamlit as st
 import tensorflow as tf
+import streamlit.components.v1 as components
 import numpy as np
 from PIL import Image
 import requests
@@ -393,21 +394,113 @@ if uploaded_file:
                             </div>
                         """, unsafe_allow_html=True)
 
-st.markdown("""
-<script>
-    window.scrollToTopFromAndroid = function() {
-        const anchor = document.getElementById("top-anchor");
-        if (anchor) {
-            anchor.scrollIntoView({ behavior: "smooth" });
-        } else {
-            window.scrollTo({ top: 0, behavior: "smooth" });
-        }
-    };
-</script>
-""", unsafe_allow_html=True)
-if st.button("🔝 Test Scroll to Top"):
-    st.markdown("<script>scrollToTopFromAndroid();</script>", unsafe_allow_html=True)
 
+components.html("""
+<script>
+(function() {
+  const doc = window.parent === window ? document : parent.document;
+  const win = window.parent === window ? window : parent;
+
+  if (!doc.getElementById("custom-bottom-navbar")) {
+    const style = doc.createElement("style");
+    style.innerHTML = `
+      #custom-bottom-navbar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 60px;
+        background: #ffffff;
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        align-items: center;
+        border-top: 1px solid #ccc;
+        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+        font-family: sans-serif;
+        z-index: 99999;
+      }
+      #custom-bottom-navbar button {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 14px;
+        color: #333;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 5px 10px;
+        transition: all 0.2s ease;
+        border-radius: 8px;
+      }
+      #custom-bottom-navbar button:hover {
+        background-color: #f0f0f0;
+        transform: scale(1.05);
+      }
+      #custom-bottom-navbar.dark {
+        background-color: #1e1e1e;
+        border-top: 1px solid #444;
+      }
+      #custom-bottom-navbar.dark button {
+        color: white;
+      }
+      body.dark-mode, body.dark-mode * {
+        background-color: #121212 !important;
+        color: #ffffff !important;
+      }
+      body.dark-mode .stButton>button,
+      body.dark-mode .stTextInput>div>div>input,
+      body.dark-mode .stTextArea>div>textarea,
+      body.dark-mode .stFileUploader,
+      body.dark-mode .stSelectbox {
+        background-color: #1f1f1f !important;
+        color: white !important;
+        border: 1px solid #555 !important;
+      }
+    `;
+    doc.head.appendChild(style);
+
+    const nav = doc.createElement("div");
+    nav.id = "custom-bottom-navbar";
+
+    const topBtn = doc.createElement("button");
+    topBtn.innerHTML = "⬆️<div style='font-size:10px;'>Top</div>";
+    topBtn.title = "Scroll to top";
+
+    const darkBtn = doc.createElement("button");
+    darkBtn.innerHTML = "🌙<div style='font-size:10px;'>Theme</div>";
+    darkBtn.title = "Toggle dark mode";
+
+    nav.appendChild(topBtn);
+    nav.appendChild(darkBtn);
+    doc.body.appendChild(nav);
+
+    function doScrollToTop() {
+      const anchor = doc.getElementById("top-anchor");
+      if (anchor) {
+        anchor.scrollIntoView({ behavior: 'smooth' });
+      } else {
+        win.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+
+    function toggleDarkMode() {
+      const navBar = doc.getElementById("custom-bottom-navbar");
+      const body = doc.body;
+      const isDark = navBar.classList.toggle("dark");
+      body.classList.toggle("dark-mode", isDark);
+    }
+
+    // Assign click handlers
+    topBtn.addEventListener("click", doScrollToTop);
+    darkBtn.addEventListener("click", toggleDarkMode);
+
+    // Expose scroll function globally for WebView
+    win.scrollToTopFromAndroid = doScrollToTop;
+  }
+})();
+</script>
+""", height=0)
 
 # Close the content wrapper
 st.markdown("</div>", unsafe_allow_html=True)
