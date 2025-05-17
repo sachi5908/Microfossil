@@ -199,6 +199,10 @@ st.markdown("""
             padding: 1rem 2rem;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
         }
 
         /* Main content padding */
@@ -209,12 +213,22 @@ st.markdown("""
 
         /* Title styling inside sticky header */
         .main-title {
-            font-size: 2rem;
+            font-size: clamp(1.5rem, 5vw, 2rem);  /* Automatically scales */
             font-weight: 800;
             color: #0d47a1;
-            margin: 0;
+            text-align: center;
+            word-wrap: break-word;
+            max-width: 100%;
         }
+        @media screen and (max-width: 600px) {
+            .sticky-header {
+                padding: 0.8rem 1rem;
+            }
 
+            .main-title {
+                font-size: 1.5rem;
+            }
+        }
         /* Banner image styling */
         .full-width-image {
             width: 100%;
