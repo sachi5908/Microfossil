@@ -149,6 +149,16 @@ st.markdown("""<div id="top-anchor"></div>""", unsafe_allow_html=True)
 # Add sticky header and anchor
 st.markdown("""
     <style>
+    /* Hide Streamlit's GitHub, Fork, and Theme icons in top right */
+    [data-testid="stToolbar"] {
+        visibility: hidden !important;
+        height: 0px !important;
+    }
+
+    /* Optional: Remove top padding left behind */
+    .stApp {
+        padding-top: 0rem !important;
+    }
     /* Sticky header */
     .sticky-header {
         position: sticky;
