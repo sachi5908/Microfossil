@@ -180,6 +180,31 @@ st.markdown("""
         top: 0;
         visibility: hidden;
     }
+
+    #custom-bottom-navbar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 60px;
+        background: #ffffff;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        border-top: 1px solid #ccc;
+        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+        font-family: sans-serif;
+        z-index: 10000 !important;  /* Make it higher than Streamlit icons */
+    }
+    /* Fix z-index of Streamlit top-right buttons */
+    [data-testid="stDecoration"] {
+        z-index: 1 !important;
+    }
+
+    /* Ensure custom bottom navbar is on top */
+    #custom-bottom-navbar {
+        z-index: 10000 !important;
+    }
     </style>
     
     <div id="top-anchor"></div>
