@@ -180,9 +180,8 @@ def predict_genus(image_file, prioritized_genera=None):
 
 # ------------------ Streamlit UI ------------------
 st.set_page_config(page_title="🦠 Microfossil Genus Classifier", layout="wide")
-st.markdown("""
-<div id="scrollTopAnchor"></div>
-""", unsafe_allow_html=True)
+st.markdown('<div id="top-anchor"></div>', unsafe_allow_html=True)
+
 # Custom CSS for sticky header and hidden elements
 st.markdown("""
     <style>
@@ -396,25 +395,18 @@ if uploaded_file:
 
 st.markdown("""
 <script>
-// Wait for the DOM to be ready
-document.addEventListener("DOMContentLoaded", function() {
-    // Define scroll function
     window.scrollToTopFromAndroid = function() {
-        // Streamlit’s content is inside a .main .block-container
-        const container = document.querySelector('.main .block-container');
-        if (container) {
-            container.scrollTo({ top: 0, behavior: 'smooth' });
+        const anchor = document.getElementById("top-anchor");
+        if (anchor) {
+            anchor.scrollIntoView({ behavior: "smooth" });
         } else {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            window.scrollTo({ top: 0, behavior: "smooth" });
         }
     };
-});
 </script>
 """, unsafe_allow_html=True)
-if st.button("Scroll to top (test)"):
-    st.markdown("""
-        <script>scrollToTopFromAndroid();</script>
-    """, unsafe_allow_html=True)
+if st.button("🔝 Test Scroll to Top"):
+    st.markdown("<script>scrollToTopFromAndroid();</script>", unsafe_allow_html=True)
 
 
 # Close the content wrapper
