@@ -180,7 +180,9 @@ def predict_genus(image_file, prioritized_genera=None):
 
 # ------------------ Streamlit UI ------------------
 st.set_page_config(page_title="🦠 Microfossil Genus Classifier", layout="wide")
-
+st.markdown("""
+<div id="scrollTopAnchor"></div>
+""", unsafe_allow_html=True)
 # Custom CSS for sticky header and hidden elements
 st.markdown("""
     <style>
@@ -391,6 +393,19 @@ if uploaded_file:
                                 </div>
                             </div>
                         """, unsafe_allow_html=True)
+
+st.markdown("""
+<script>
+    window.scrollToTopFromAndroid = function() {
+        const anchor = document.getElementById("scrollTopAnchor");
+        if (anchor) {
+            anchor.scrollIntoView({ behavior: "smooth", block: "start" });
+        } else {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+    }
+</script>
+""", unsafe_allow_html=True)
 
 # Close the content wrapper
 st.markdown("</div>", unsafe_allow_html=True)
