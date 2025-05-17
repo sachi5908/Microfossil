@@ -275,7 +275,7 @@ components.html("""
         border-top: 1px solid #ccc;
         box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
         font-family: sans-serif;
-        z-index: 99999;
+        z-index: 999999 !important;
       }
       #custom-bottom-navbar button {
         background: none;
@@ -294,6 +294,13 @@ components.html("""
         background-color: #f0f0f0;
         transform: scale(1.05);
       }
+
+      /* Force Streamlit decorations lower */
+      [data-testid="stDecoration"] {
+        z-index: 1 !important;
+      }
+
+      /* Optional dark mode support */
       #custom-bottom-navbar.dark {
         background-color: #1e1e1e;
         border-top: 1px solid #444;
@@ -360,3 +367,4 @@ components.html("""
 })();
 </script>
 """, height=0)
+
