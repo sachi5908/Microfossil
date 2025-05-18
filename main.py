@@ -140,26 +140,26 @@ def extract_candidate_genera(gemini_text):
         return []  # If Gemini fails to return valid JSON
 
     feature_genus_map = {
-        "unilocular": ["Legena"],
-        "flattened": ["Frondicularia", "Neoflabellina"],
-        "uniserial": ["Lituola", "Ammobaculites", "Nodosaria", "Frondicularia", "Marginulina", "Neoflabellina"],
-        "biserial": ["Dorothia", "Heterohelix", "Pseudotextularia", "Gublerina", "Bulimina", "Bolivina"],
-        "triserial": ["Vernuilina", "Tritexia", "Bulimina"],
-        "trochospiral": ["Eggerella", "Globigerina", "Globotruncana"],
-        "steptospiral": ["Spiroloculina", "Quinqueloculina", "Triloculina"],
-        "early triserial": ["Gaudryna"],
-        "early trochospiral": ["Dorothia"],
-        "terminal": ["Ammobaculites", "Lituola", "Quinqueloculina", "Triloculina", "Nodosaria", "Frondicularia", "Lenticulina", "Marginulina", "Neoflabellina", "Gublerina"],
-        "interiomarginal": ["Trochamminoides", "Tritexia", "Gaudryna", "Dorothia", "Eggerella", "Globotruncana", "Heterohelix", "Pseudotextularia", "Bulimina"],
-        "umbilical": ["Globigerina", "Globotruncana"],
-        "agglutinated": ["Lituola", "Ammobaculites", "Trochamminoides", "Vernuilina", "Gaudryna", "Tritexia", "Dorothia", "Eggerella"],
-        "calcareous": ["Spiroloculina", "Quinqueloculina", "Triloculina", "Nodosaria", "Legena", "Frondicularia", "Lenticulina", "Marginulina", "Neoflabellina", "Globigerina", "Globotruncana", "Heterohelix", "Pseudotextularia", "Gublerina", "Bulimina", "Bolivina"],
-        "imperforated": ["Spiroloculina"],
-        "perforated": ["Nodosaria", "Legena", "Lenticulina", "Marginulina", "Neoflabellina", "Globigerina", "Globotruncana", "Pseudotextularia", "Gublerina", "Bulimina", "Bolivina"],
-        "porcellaneous": ["Spiroloculina", "Quinqueloculina", "Triloculina"],
-        "coiling": ["Trochamminoides"],
-        "planispiral": ["Trochamminoides", "Lenticulina"],
-        "early planispirally": ["Lituola"]
+        # "unilocular": ["Legena"],
+        # "flattened": ["Frondicularia", "Neoflabellina"],
+        # "uniserial": ["Lituola", "Ammobaculites", "Nodosaria", "Frondicularia", "Marginulina", "Neoflabellina"],
+        # "biserial": ["Dorothia", "Heterohelix", "Pseudotextularia", "Gublerina", "Bulimina", "Bolivina"],
+        # "triserial": ["Vernuilina", "Tritexia", "Bulimina"],
+        # "trochospiral": ["Eggerella", "Globigerina", "Globotruncana"],
+        # "steptospiral": ["Spiroloculina", "Quinqueloculina", "Triloculina"],
+        # "early triserial": ["Gaudryna"],
+        # "early trochospiral": ["Dorothia"],
+        # "terminal": ["Ammobaculites", "Lituola", "Quinqueloculina", "Triloculina", "Nodosaria", "Frondicularia", "Lenticulina", "Marginulina", "Neoflabellina", "Gublerina"],
+        # "interiomarginal": ["Trochamminoides", "Tritexia", "Gaudryna", "Dorothia", "Eggerella", "Globotruncana", "Heterohelix", "Pseudotextularia", "Bulimina"],
+        # "umbilical": ["Globigerina", "Globotruncana"],
+        # "agglutinated": ["Lituola", "Ammobaculites", "Trochamminoides", "Vernuilina", "Gaudryna", "Tritexia", "Dorothia", "Eggerella"],
+        # "calcareous": ["Spiroloculina", "Quinqueloculina", "Triloculina", "Nodosaria", "Legena", "Frondicularia", "Lenticulina", "Marginulina", "Neoflabellina", "Globigerina", "Globotruncana", "Heterohelix", "Pseudotextularia", "Gublerina", "Bulimina", "Bolivina"],
+        # "imperforated": ["Spiroloculina"],
+        # "perforated": ["Nodosaria", "Legena", "Lenticulina", "Marginulina", "Neoflabellina", "Globigerina", "Globotruncana", "Pseudotextularia", "Gublerina", "Bulimina", "Bolivina"],
+        # "porcellaneous": ["Spiroloculina", "Quinqueloculina", "Triloculina"],
+        # "coiling": ["Trochamminoides"],
+        # "planispiral": ["Trochamminoides", "Lenticulina"],
+        # "early planispirally": ["Lituola"]
     }
 
     genus_score = defaultdict(int)
